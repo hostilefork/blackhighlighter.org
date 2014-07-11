@@ -1,0 +1,58 @@
+{
+	"_comment_ThisFileFormatDescription": "http://package.json.nodejitsu.com/",
+	"_comment_JsonSucksForCommentingConfigs": "http://stackoverflow.com/questions/244777/",
+	"name": "blackhighlighter.org",
+	"subdomain": "blackhighlighter",
+	"domains": [
+		"blackhighlighter.org",
+		"www.blackhighlighter.org"
+	],
+	"preferGlobal": "false",
+	"version": "0.3.0",
+	"author": "Brian Dickens <brian@hostilefork.com>",
+	"description": "Code for site at blackhighlighter.org, which is a sandbox and step-by-step walkthrough of the blackhighlighter package",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/hostilefork/blackhighlighter.git"
+	},
+	"keywords": [
+		"server",
+		"cryptography",
+		"redaction",
+		"transparency",
+		"accountability"
+	],
+	"dependencies": {
+		"requirejs": "*",
+		"body-parser": "*",
+		"express": ">=3.0.0",
+		"serve-favicon": "*",
+		"swig": "*",
+		"mongodb": "*",
+		"underscore": "*",
+		"q": "*",
+		"blackhighlighter": "*"
+	},
+	"noAnalyze": true,
+	"devDependencies": {
+		"test": ">=0.0.5"
+	},
+	"bundleDependencies": [],
+	"license": "AGPL",
+	"engines": {
+		"node": "0.10.x"
+	},
+	"scripts": {
+		"start": "app.js",
+		"test": "node test/all.js"
+	},
+	"_comment_NeededByOpenShift": "https://github.com/ramr/nodejs-custom-version-openshift/blob/master/package.json",
+	"main": "app.js",
+	"_comment_BewareHidden.IgnoreFiles": "https://github.com/jrburke/requirejs/issues/541",
+	"files": [
+		"app.js",
+		"mytags.js",
+		"public",
+		"views"
+	]
+}
