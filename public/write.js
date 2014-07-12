@@ -154,6 +154,8 @@ define([
 	});
 	$('#editor').focus();
 
+	clientCommon.plugHostingServiceIfNecessary(PARAMS.HOSTING_SERVICE);
+
 	// Currently the update hook fires on any textual update...
 	updateCommitPreviewIfNecessary();
 

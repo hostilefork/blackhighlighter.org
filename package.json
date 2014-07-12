@@ -1,14 +1,14 @@
 {
 	"_comment_ThisFileFormatDescription": "http://package.json.nodejitsu.com/",
 	"_comment_JsonSucksForCommentingConfigs": "http://stackoverflow.com/questions/244777/",
-	"name": "blackhighlighter.org",
+	"name": "blackhighlighter-sandbox",
 	"subdomain": "blackhighlighter",
 	"domains": [
 		"blackhighlighter.org",
 		"www.blackhighlighter.org"
 	],
 	"preferGlobal": "false",
-	"version": "0.3.0",
+	"version": "0.3.0-14",
 	"author": "Brian Dickens <brian@hostilefork.com>",
 	"description": "Code for site at blackhighlighter.org, which is a sandbox and step-by-step walkthrough of the blackhighlighter package",
 	"repository": {

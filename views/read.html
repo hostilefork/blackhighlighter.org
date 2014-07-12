@@ -45,6 +45,8 @@ blackhighlighter|READ
 	PARAMS.reveals = {{ revealed_certificates|json_encode|raw }};
 
 	PARAMS.base_url = "{% url blackhighlighter.views.base %}";
+
+	PARAMS.HOSTING_SERVICE = "{{ HOSTING_SERVICE }}";
 {% endblock params_javascript %}
 
 

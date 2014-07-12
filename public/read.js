@@ -122,7 +122,9 @@ define([
 		commit: PARAMS.commit,
 		reveals: PARAMS.reveals,
 		update: updateTabEnables
-	});	
+	});
+
+	clientCommon.plugHostingServiceIfNecessary(PARAMS.HOSTING_SERVICE);
 	
 	// The user is allowed to type in or paste certificates.  For reasons of readability
 	// and to give users the ability to easily extract individual certificates, we

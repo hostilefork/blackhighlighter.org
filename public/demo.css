@@ -39,7 +39,7 @@ body {
  * It's technically possible in some browsers to offset it, but not all.
  */
 .ui-tabs .ui-tabs-nav {
-	padding-top: 110px !important;
+	padding-top: 110px;
 	background-image: url(blackhighlighter-header-logo.png);
 	background-position: top right;
 	background-repeat: no-repeat;

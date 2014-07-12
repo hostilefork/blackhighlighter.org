@@ -102,6 +102,36 @@ define(['jquery', 'underscore'], function($, _){
 			});
 
 	    	$leads.height(maxHeight);
+	    },
+
+	    //
+	    // BANNER GRAPHIC OVERRIDE
+	    //
+	    // Small hack for attributing Nodejitsu in the banner graphic (if the
+	    // site is being hosted on Nodejitsu under their "free for opensource"
+	    // hosting program
+	    //
+
+	    plugHostingServiceIfNecessary: function(service) {
+	    	if (service != "Nodejitsu")
+	    		return;
+
+	    	// 160 - 128 = 32; additional height added to header's 110px
+	    	// So the padding-top is adjusted from 110 to 142px so that the
+	    	// little Nodejitsu cloud and tagline is inserted
+
+	    	$(".ui-tabs .ui-tabs-nav").css("padding-top",
+	    		''
+	    	);
+	    	$(".ui-tabs .ui-tabs-nav").css("padding-top",
+	    		"142px"
+	    	);
+	    	$(".ui-tabs .ui-tabs-nav").css("background-image",
+	    		''
+	    	);
+	    	$(".ui-tabs .ui-tabs-nav").css("background-image",
+	    		"url(http://blackhighlighter.org/public/blackhighlighter-header-nodejitsu.png)"
+	    	);
 	    }
 	}
 });
