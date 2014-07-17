@@ -297,7 +297,9 @@ define([
 			index++;
 		}
 
-		// if we have something like "{foo},{bar}", then ensure it has brackets e.g. "[{foo},{bar}]"
+		// if we have something like "{foo},{bar}", then ensure it has
+		// brackets e.g. "[{foo},{bar}]"
+
 		if (topmostBraceCount > 1) {
 			if (tidyJson[0] != '[') {
 				tidyJson = '[' + tidyJson;
@@ -312,8 +314,12 @@ define([
 		
 	updateTabEnables();
 	
-	var lastTabId = 'tabs-verify'; // we start on verify tab, and don't get a select message
+	// we start on verify tab, and don't get a select message
+
+	var lastTabId = 'tabs-verify';
+
 	// Bind function for what happens on tab select
+	
 	$('#tabs').on('tabsbeforeactivate', function(event, ui) {
 
 		var $editor = $("#editor");
@@ -354,6 +360,25 @@ define([
 				throw 'no match for tab in read.js';
 		}
 		lastTabId = ui.newPanel.attr('id');
+	});
+
+	// We can only set up the expanding text area if that text area is visible
+	// but it remembers after that, as long as the CSS changes don't get too
+	// drastic...
+
+	var expandingInitialized = false;
+
+	$('#tabs').on('tabsactivate', function (event, ui) {
+		if (ui.newPanel.attr('id') == 'tabs-verify') {
+			if (!expandingInitialized) {
+				$('#certificates').expanding();
+			}
+
+			// attempting to set focus to a hidden item also has trouble
+			// sometimes so better to do this after the tab is being shown
+
+			$('#certificates').focus();
+		}
 	});
 
 	switch (PARAMS.tabstate) {
