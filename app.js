@@ -259,12 +259,23 @@ function showOrVerify(req, res, tabstate) {
 	// http://stackoverflow.com/a/9243020/211160
 	var commit_id = req.param('commit_id', null);
 
-	blackhighlighter.getCommitAndReveals(commit_id, function(err, commit, reveals) {
+	blackhighlighter.getCommitsWithReveals([commit_id], function(err, json) {
 		if (err) {
 			// REVIEW: We weren't asked for JSON.  We were asked for HTML.
 			// This is not the right thing to do in case of an error here!
+
 			resSendJsonForErr(res, err);
-		} else {
+		}
+		else {
+			// Blackhighlighter should give us one and exactly one commit
+			// and reveal set if we only sent it one commit ID, or we should
+			// get back an error.  A more robust app might want to check
+			// that, but this is just a demo sandbox and the internal checking
+			// is more important.
+
+			var commit = json[0]["commit"];
+			var reveals = json[0]["reveals"];
+
 			res.render('read', {
 				MAIN_SCRIPT: 'read'
 				, HOSTING_SERVICE: process.env.HOSTING_SERVICE
@@ -299,36 +310,35 @@ app.get('/s/:commit_id([0-9A-Za-z~_\-]+)$', function (req, res) {
 app.post('/commit/$', function (req, res) {
 	// Difference between req.param and req.params:
 	// http://stackoverflow.com/a/9243020/211160
-	var commit = JSON.parse(req.param('commit', null));	
 
-	blackhighlighter.makeCommitment(commit, function(err, json) {
+	var commit = JSON.parse(req.param('commit_array', null));	
+
+	blackhighlighter.makeCommitments(commit, function(err, json) {
 		if (err) {
 			resSendJsonForErr(res, err);
-		} else {
+		}
+		else {
 			res.json(json);
 		}
 	});
 });
 
 
-app.post('/reveal/$', function (req, res) {
-	// The /reveal/ HTTP POST handler once would take an array to allow you
-	// to reveal more than one redaction "color" at a time.  But the current
-	// main demo is only one color (black) so that would be uncommon, and
-	// also it creates protocol complexity in error reporting if you were to
-	// send two reveals... with one bad, and one good. 
+app.post('/reveal/$', function (req, res) { 
 
 	// Difference between req.param and req.params:
 	// http://stackoverflow.com/a/9243020/211160
-	var commit_id = req.param('commit_id');
-	var revealsArray = JSON.parse(req.param('reveals', null));
 
-	blackhighlighter.revealSecret(
-		commit_id, revealsArray,
+	var commit_id_with_reveals_array
+		= req.param('commit_id_with_reveals_array');
+
+	blackhighlighter.revealSecrets(
+		commit_id_with_reveals_array,
 		function(err, json) {
 			if (err) {
 				resSendJsonForErr(res, err);
-			} else {
+			}
+			else {
 				res.json(json);
 			}
 		}
