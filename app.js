@@ -21,94 +21,118 @@
 //   See http://blackhighlighter.hostilefork.com for documentation.
 //
 
+//
+// This app.js file implements a simple web server, an instance of which is
+// deployed on blackhighlighter.org.  It shouldn't be confused with the
+// npm package 'blackhighlighter', which implements the actual server side
+// logic used by the blackhighlighter widget.
+//
+// (One key reason why blackhighlighter's functionality is set up this way--
+// as opposed to a standalone server--is to let a single Node instance
+// handle blackhighlighter requests as well as serve other HTML or static
+// content.)
+//
 
 
-//
-// UTILITY LIBRARIES
-//
 
-// Underscore contains common JavaScript helpers like you might find in a
-// library like jQuery (forEach, isString, etc)...but without being tied
-// into the presumption that you are running in a browser with a DOM, etc.
-//
-// http://documentcloud.github.com/underscore/
+// http://blog.hostilefork.com/underscore-use-with-node-jquery/
+
 var _ = require('underscore')._;
 
 
 
-// 
-// BASIC HTTP SETUP
 //
-// The http module is one of Node's built-in facilities
+// GET CONFIGURATION ENVIRONMENT VARIABLES OR PROVIDE DEFAULTS
+//
+// process.env contains the environment variables of the execution context:
+//
+// http://nodejs.org/api/process.html#process_process_env
 //
 
-var http = require('http');
 
+// Default to listening on port 3000 if no 'set PORT=NNNN`
 
-
-//
-// ERROR HANDLING
-//
-// Node is unusual because if its single-threaded-server crashes in any given
-// handler, it will take down the whole server process.  A general error
-// handling strategy is needed.  How do we deal with exceptions that are thrown
-// on invalid inputs from the client, vs. internal errors.
-//
-// http://stackoverflow.com/questions/5816436/
-//
-// For now just strings, but we want the stack trace in there too
-//
-// http://www.devthought.com/2011/12/22/a-string-is-not-an-error/
-//
-// See note here about how arguments.callee is not to be used in strict mode:
-//
-// https://code.google.com/p/v8/wiki/JavaScriptStackTraceApi
-//
-function resSendJsonForErr(res, err) {
-
-	if (!err) {
-		// Legacy from Step; changing to not call this when there is no error
-		throw Error("resSendJsonForErr called without an error parameter");
-	} 
-
-	if (err instanceof Error) {
-		console.error(err.stack);
-	} else {
-		console.warn("Non-error subclass thrown, bad style...");
-	}
-
-	if (err instanceof blackhighlighter.ClientError) {
-		console.error(err.message);
-		res.json(400, { error: err.toString() });
-	} else {
-		res.json(500, { error: err.toString() });
-	}
+var port = process.env.PORT;
+if (!port) {
+    port = 3000;
 }
+
+
+// Default to local MongoDB if no 'set MONGO_CONNECT_URI=http://...'
+//
+// http://docs.mongodb.org/manual/reference/default-mongodb-port/
+// http://api.mongodb.org/java/current/com/mongodb/MongoURI.html
+
+var mongoConnectURI = process.env.MONGO_CONNECT_URI;
+if (!mongoConnectURI) {
+    mongoConnectURI = "mongodb://localhost:27017";
+}
+
+
+// To optionally give credit to your hosts, for example:
+//
+// http://opensource.nodejitsu.com/
+
+var hostingService = process.env.HOSTING_SERVICE;
+if (!hostingService) {
+    hostingService = "anonymous";
+}
+
+var hostingServiceUrl = process.env.HOSTING_SERVICE_URL;
+if (!hostingServiceUrl) {
+    hostingServiceUrl = "http://en.wikipedia.org/wiki/Anonymous";
+}
+
+
+//
+// INCLUDE BLACKHIGHLIGHTER WIDGET SERVER-SIDE LOGIC
+//
+// https://www.npmjs.org/package/blackhighlighter
+//
+
+var blackhighlighter = require('blackhighlighter');
+
+blackhighlighter.configure({
+    mongoConnectURI: mongoConnectURI
+});
+
+
+
+//
+// ERROR HANDLER
+//
+// Sends JSON for an error that a callback has received or has been thrown.
+//
+// http://blog.hostilefork.com/error-handling-internal-badrequest-node/
+//
+
+function resSendJsonForErr (res, err) {
+    if (!err) {
+        throw Error("resSendJsonForErr called without an error parameter");
+    } 
+
+    if (err instanceof Error) {
+        console.error(err.stack);
+    }
+    else {
+        console.warn("Non-error subclass thrown, bad style...");
+    }
+
+    if (err instanceof blackhighlighter.ClientError) {
+        console.error(err.message);
+        res.json(400, { error: err.toString() });
+    }
+    else {
+        res.json(500, { error: err.toString() });
+    }
+}
+
 
 
 //
 // EXPRESS AND SWIG SETUP
 //
-// Express is a layer which provides things like URL redirects and content 
-// negotiation for the web ( http://expressjs.com/ ).  It does not prescribe
-// any particular "templating engine", which lets you author web content as a
-// hybrid of boilerplate with dynamic portions weaved in from code.  For that
-// I use Swig ( http://paularmstrong.github.com/swig/ ).
-//
-// I chose Express because it seemed like the de facto standard.  I chose Swig
-// because I was originally porting Blackhighlighter from Django, which Swig
-// was designed to be (mostly) compatible with--due to shared philosophy:
-//
-// https://docs.djangoproject.com/en/dev/topics/templates/
-//
-// Swig also fares well in terms of metrics when compared with the competition
-// (but do note this table was made by Swig's author):
-//
-// http://paularmstrong.github.io/node-templates/
-//
-// To get Swig integrated with Express I referred to this sample code:
-//
-// https://github.com/paularmstrong/swig/blob/master/examples/express/server.js
+// http://blog.hostilefork.com/express-swig-node-basics-2014/
 //
 
 var express = require('express');
@@ -131,231 +155,240 @@ app.use(bodyParser.urlencoded({
 
 var swig = require('swig');
 swig.setDefaults({
-	loader: swig.loaders.fs(__dirname + '/views'),
+    loader: swig.loaders.fs(__dirname + '/views'),
 
-	// TURN CACHE BACK ON in deployment environments...
-	cache: false
+    // TURN CACHE BACK ON in deployment environments...
+    cache: false
 });
 
 // Register the template engine
+
 app.engine('html', swig.renderFile);
 app.set('view engine', 'html');
 app.set('views', __dirname + '/views');
 
-// Load custom template tags
-//     http://paularmstrong.github.io/swig/docs/api/#setTag
-//     http://paularmstrong.github.io/swig/docs/extending/#tags
-var mytags = require('./mytags');
-swig.setTag(
-	'url'
-	, mytags.url.parse
-	, mytags.url.compile
-	, mytags.url.ends
-);
-swig.setTag(
-	'comment'
-	, mytags.comment.parse
-	, mytags.comment.compile
-	, mytags.comment.ends
-);
+// Note: No custom tags in Swig in use at present, though they're possible:
+//
+// http://blog.hostilefork.com/custom-tags-swig-url-django/
 
 
 // These are provided to every template context by default
+
 app.locals.LIBS_URL = '/public/js/';
 app.locals.BLACKHIGHLIGHTER_MEDIA_URL = '/public/';
 app.locals.PROJECT_MEDIA_URL = '/public/';
+app.locals.BLACKHIGHLIGHTER_BASE_URL = '/';
 app.locals.NODE_VERSION = process.version;
+app.locals.HOSTING_SERVICE = hostingService;
+app.locals.HOSTING_SERVICE_URL = hostingServiceUrl;
 
-// optionals, set in your environment somewhere...
-/* app.locals.HOSTING_SERVICE: "string"; */
-/* app.locals.HOSTING_SERVICE_URL: "http://wherever/to/link"; */
-
-
-//
-// BLACKHIGHLIGHTER COMPONENT
-//
-// The Black Highlighter logic for doing commits, reveals, and storing
-// information in the database is put in its own component.  Although
-// you could conceivably run it as a server on its own, some services
-// charge per-node-instance.  This way you can just hook the routines
-// in with everything else.
-// 
-var blackhighlighter = require('blackhighlighter');
-blackhighlighter.configure({
-	mongoConnectURI: process.env.MONGO_CONNECT_URI
-    	// http://docs.mongodb.org/manual/reference/default-mongodb-port/
-    	|| "mongodb://localhost:27017"
-});
 
 
 
 //
-// HTTP GET/POST ROUTING HANDLERS
+// REST SERVICES USED BY BLACKHIGHLIGHTER WIDGET
 //
-// This is where we map URL requests to functions that will be serving those
-// requests.  Like in other systems, the URL string is matched against regular
-// expressions.  Then through "routing" you can have Express parse out
-// fragments of the URL, do some handling for a part, and then crunch on the
-// rest of the path:
+// These operate with JSON instead of generating HTML intended for the
+// browser.  Currently minimal wrappers over calls to the blackhighlighter
+// NPM module.
 //
-//     http://expressjs.com/guide.html#routing
+//    /query/
+//    /commit/
+//    /get/
 //
-// Handler functions take a req object ("REQuest") and a res object
-// ("RESponse").  Although the function signature is very similar to view
-// dispatch in something like Django, the asynchronous nature of Node.js means
-// that the function may pass off the res object to some other subsystem
-// and then return.  This delegation will continue until someone finally calls
-// res.end() and it is important to ensure that happens only once.
+// Small DRY issue ("don't repeat yourself"), these are hardcoded in the widget
+// and then repeated here in the client.  GitHub issue for addressing it:
 //
-
-// Serve out all files in the public directory statically
-// http://stackoverflow.com/questions/5924072/
-app.use("/public/js/jquery-blackhighlighter",
-	express.static(blackhighlighter.pathForJqueryBlackhighlighter())
-);
-app.use("/public", express.static(__dirname + '/public'));
+// https://github.com/hostilefork/blackhighlighter/issues/57
 
 
-// http://stackoverflow.com/a/15463231/211160
-var favicon = require('serve-favicon');
-app.use(favicon(__dirname + '/public/favicon.ico'));
+app.get('/query/$', function (req, res) {
+    // We need to be able ask for multiple commit IDs in one query, since
+    // if Blackhighlighter is being used for a commenting system (for instance)
+    // we don't want to have a separate Ajax request for each comment.
 
+    var commit_ids = JSON.parse(req.param('commit_ids', null));
 
-// No homepage for now, just redirect to write URL
-app.get('/', function (req, res) {
-    res.render('home', {
-    	MAIN_SCRIPT: "home"
-    	, HOSTING_SERVICE: process.env.HOSTING_SERVICE
-    	, HOSTING_SERVICE_URL: process.env.HOSTING_SERVICE_URL
+    blackhighlighter.getCommitsWithReveals(commit_ids, function(err, json) {
+        if (err) {
+            resSendJsonForErr(res, err);
+        }
+        else {
+            res.json(json);
+        }
     });
-});
-
-
-// No online documentation for now
-app.get('/docs/*', function(req, res) {
-	res.send('For now, if you want to '
-		+ 'learn more about this project, please visit '
-		+ '<a href="http://blackhighlighter.hostilefork.com">'
-		+	'hostilefork.com/blackhighlighter'
-		+ '</a>');
-});
-
-
-// The /write/ handler is relatively simple, as document authoring happens
-// entirely in JavaScript on the client's machine.  The /commit/ HTTP POST
-// handler does the actual server-side work of saving the document.
-app.get('/write/$', function (req, res) {
-    res.render('write', {
-    	MAIN_SCRIPT: "write"
-    	, HOSTING_SERVICE: process.env.HOSTING_SERVICE
-    	, HOSTING_SERVICE_URL: process.env.HOSTING_SERVICE_URL
-    });
-});
-
-
-function showOrVerify(req, res, tabstate) {
-
-	// Difference between req.param and req.params:
-	// http://stackoverflow.com/a/9243020/211160
-	var commit_id = req.param('commit_id', null);
-
-	blackhighlighter.getCommitsWithReveals([commit_id], function(err, json) {
-		if (err) {
-			// REVIEW: We weren't asked for JSON.  We were asked for HTML.
-			// This is not the right thing to do in case of an error here!
-
-			resSendJsonForErr(res, err);
-		}
-		else {
-			// Blackhighlighter should give us one and exactly one commit
-			// and reveal set if we only sent it one commit ID, or we should
-			// get back an error.  A more robust app might want to check
-			// that, but this is just a demo sandbox and the internal checking
-			// is more important.
-
-			var commit = json[0]["commit"];
-			var reveals = json[0]["reveals"];
-
-			res.render('read', {
-				MAIN_SCRIPT: 'read'
-				, HOSTING_SERVICE: process.env.HOSTING_SERVICE
-				, HOSTING_SERVICE_URL: process.env.HOSTING_SERVICE_URL
-				, commit_id: commit_id
-				, all_certificates:
-					blackhighlighter.generateCertificateStubsFromCommit(commit)
-				, tabstate: tabstate
-				, commit: commit
-				, revealed_certificates: reveals
-				, public_html:
-					blackhighlighter.generateHtmlFromCommitAndReveals(
-						commit,
-						reveals
-					)
-			});
-		}
-	});
-}
-
-
-app.get('/v/:commit_id([0-9A-Za-z~_\-]+)$', function (req, res) {
-	showOrVerify(req, res, 'verify');
-});
-
-
-app.get('/s/:commit_id([0-9A-Za-z~_\-]+)$', function (req, res) {
-	showOrVerify(req, res, 'show');
 });
 
 
 app.post('/commit/$', function (req, res) {
-	// Difference between req.param and req.params:
-	// http://stackoverflow.com/a/9243020/211160
+    // Multiple blackhighlighter entries may be committed in one network
+    // request, but there is currently no guarantee of atomicity
+    //
+    // https://github.com/hostilefork/blackhighlighter/issues/51
 
-	var commit = JSON.parse(req.param('commit_array', null));	
+    var commit = JSON.parse(req.param('commit_array', null));   
 
-	blackhighlighter.makeCommitments(commit, function(err, json) {
-		if (err) {
-			resSendJsonForErr(res, err);
-		}
-		else {
-			res.json(json);
-		}
-	});
+    blackhighlighter.makeCommitments(commit, function(err, json) {
+        if (err) {
+            resSendJsonForErr(res, err);
+        }
+        else {
+            res.json(json);
+        }
+    });
 });
 
 
 app.post('/reveal/$', function (req, res) { 
+    // Multiple blackhighlighter entries may be revealed in one network
+    // request, but there is currently no guarantee of atomicity
+    //
+    // https://github.com/hostilefork/blackhighlighter/issues/51
 
-	// Difference between req.param and req.params:
-	// http://stackoverflow.com/a/9243020/211160
+    var commit_id_with_reveals_array
+        = req.param('commit_id_with_reveals_array');
 
-	var commit_id_with_reveals_array
-		= req.param('commit_id_with_reveals_array');
-
-	blackhighlighter.revealSecrets(
-		commit_id_with_reveals_array,
-		function(err, json) {
-			if (err) {
-				resSendJsonForErr(res, err);
-			}
-			else {
-				res.json(json);
-			}
-		}
-	);
+    blackhighlighter.revealSecrets(
+        commit_id_with_reveals_array,
+        function(err, json) {
+            if (err) {
+                resSendJsonForErr(res, err);
+            }
+            else {
+                res.json(json);
+            }
+        }
+    );
 });
+
+
+
+//
+// HOME PAGE WITH ANIMATION OVERVIEW
+//
+
+app.get('/', function (req, res) {
+    res.render('home', {
+        MAIN_SCRIPT: "home"
+    });
+});
+
+
+
+//
+// THE COMPOSE/PROTECT/COMMIT PAGE
+//
+// The /write/ handler is relatively simple, as document authoring happens
+// entirely in JavaScript on the client's machine.  The /commit/ HTTP POST
+// handler does the actual server-side work of saving the document.
+//
+
+app.get('/write/$', function (req, res) {
+    res.render('write', {
+        MAIN_SCRIPT: "write"
+    });
+});
+
+
+
+//
+// THE SHOW/VERIFY/REVEAL PAGE
+//
+// There are two entry points to the page where you can show and verify and
+// reveal.  Because the commit ID has to be so long for the security of the
+// hash, shorthand is used and the paths are prefixed with /s/ and /v/
+// instead of /show/ and /verify/
+//
+
+function showOrVerify (req, res, tabstate) {
+    var commit_id = req.param('commit_id', null);
+
+    blackhighlighter.getCommitsWithReveals([commit_id], function(err, json) {
+        if (err) {
+            // REVIEW: We weren't asked for JSON.  We were asked for HTML.
+            // This is not the right thing to do in case of an error here!
+
+            resSendJsonForErr(res, err);
+        }
+        else {
+            // We only sent one commit_id, and Blackhighlighter module
+            // indicated success--which guarantees one commit w/ reveal set
+
+            var commit = json[0]["commit"];
+            var reveals = json[0]["reveals"];
+
+            res.render('read', {
+                MAIN_SCRIPT: 'read'
+                , commit_id: commit_id
+                , tabstate: tabstate
+                , commit: commit
+                , revealed_certificates: reveals
+                , public_html:
+                    blackhighlighter.generateHtmlFromCommitAndReveals(
+                        commit,
+                        reveals
+                    )
+            });
+        }
+    });
+}
+
+
+app.get('/v/:commit_id([0-9A-Za-z~_\-]+)$', function (req, res) {
+    showOrVerify(req, res, 'verify');
+});
+
+
+app.get('/s/:commit_id([0-9A-Za-z~_\-]+)$', function (req, res) {
+    showOrVerify(req, res, 'show');
+});
+
+
+
+//
+// DISCUSSION PAGE TEST
+//
+// The /discussion/ handler is new and testing a workflow in which the
+// blackhighlighter process can support multiple widgets on one page,
+// as might be used in a blog commenting system.  **PRE-ALPHA!**
+//
+
+app.get('/discussion/$', function (req, res) {
+    res.render('discussion', {
+        MAIN_SCRIPT: "discussion"
+    });
+});
+
+
+
+//
+// STATIC FILES TO SERVE FOR THE DEMO
+//
+// For convenience while developing the demo, uses Express's static serving
+// instead of having to sync with a separate static service like Amazon S3.
+//
+// http://stackoverflow.com/questions/5924072/
+//
+
+app.use("/public/js/jquery-blackhighlighter",
+    express.static(blackhighlighter.pathForJqueryBlackhighlighter())
+);
+
+app.use("/public", express.static(__dirname + '/public'));
+
+// http://stackoverflow.com/a/15463231/211160
+
+var favicon = require('serve-favicon');
+app.use(favicon(__dirname + '/public/favicon.ico'));
 
 
 
 //
 // START LISTENING FOR SERVER REQUESTS
 //
-// Once we've got all the handlers set up, we can tell Express to start
-// listening for connections.
+// http://blog.hostilefork.com/express-swig-node-basics-2014/
 //
 
-// JavaScriptOR (||) variable assignment:
-// http://stackoverflow.com/questions/2100758/
-var port = (process.env.PORT || 3000);
 console.log("Listening on port " + port);
+
 app.listen(port);

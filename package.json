@@ -8,7 +8,7 @@
 		"www.blackhighlighter.org"
 	],
 	"preferGlobal": "false",
-	"version": "0.3.0-14",
+	"version": "0.3.0-15",
 	"author": "Brian Dickens <brian@hostilefork.com>",
 	"description": "Code for site at blackhighlighter.org, which is a sandbox and step-by-step walkthrough of the blackhighlighter package",
 	"repository": {

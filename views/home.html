@@ -1,9 +1,9 @@
 {% extends "base.html" %} {# "extends" must be first tag in template, needed so DOCTYPE is first line #}
 
-{# This is a django-templated HTML file #}
-{# http://docs.djangoproject.com/en/dev/topics/templates/#topics-templates #}
+{# This is a swig-templated HTML file #}
+{# http://paularmstrong.github.com/swig/ #}
 
-{% comment %}
+{#
  home.html
  Homepage for blackhighlighter
  Copyright (C) 2009-2014 HostileFork.com
@@ -22,7 +22,7 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
    See http://blackhighlighter.hostilefork.com for documentation.
-{% endcomment %}
+#}
 
 
 {% block title %}
@@ -34,7 +34,7 @@ blackhighlighter|HOME
 	{% parent %} {# inherit any existing parameter block #}
 	PARAMS.blackhighlighter_media_url = "{{ BLACKHIGHLIGHTER_MEDIA_URL }}"; 
 
-	PARAMS.base_url = "{% url blackhighlighter.views.base %}";
+	PARAMS.base_url = "{{ BLACKHIGHLIGHTER_BASE_URL }}";
 
 	PARAMS.HOSTING_SERVICE = "{{ HOSTING_SERVICE }}";
 {% endblock params_javascript %}

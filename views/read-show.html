@@ -1,7 +1,7 @@
 {# This is a swig-templated HTML file #}
 {# http://paularmstrong.github.com/swig/ #}
 
-{% comment %}
+{#
 
  show_tab.html - "Show" tab, included from read.html
  Copyright (C) 2012 HostileFork.com
@@ -21,7 +21,7 @@
 
    See http://blackhighlighter.hostilefork.com for documentation.
 
-{% endcomment %}
+#}
 
 <div class="tabs-content" id="tabs-show">
 
@@ -59,34 +59,5 @@
 				</button>
 			</div>
 		</div>
-
-	{% comment %}
-		<!-- Each accordion div should look like this -->
-		<div title='{# hash #}'>
-			<a href="#">{# Local or Server #} Certificate: {# id #}</a>
-			<div>
-			{# JSON certificate text #}
-			<form>
-				<input type="button" value="Remove" name="button1" onclick="(code to remove this certificate)" />
-			</form>
-			</div>
-		</div>
-	{% endcomment %}
-		<!--
-		<div id="accordion">
-		{% for certificate in all_certificates %}
-			<div title='{{ certificate.sha256 }}'>
-			{% if true %}
-				<a href="#">Certificate {{ forloop.counter }}: Revealed on {{ certificate.reveal_date }}</a>
-			{% else %}
-				<a href="#">Certificate {{ forloop.counter }}: Not Revealed to Public</a>
-			{% endif %}
-				<div>
-					<i>For the moment, Javascript is required to see details of the reveal!</i>
-				</div>
-			</div>
-		{% endfor %}
-		</div>
-		-->
 	</div>
 </div>

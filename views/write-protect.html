@@ -1,7 +1,7 @@
 {# This is a swig-templated HTML file #}
 {# http://paularmstrong.github.com/swig/ #}
 
-{% comment %}
+{#
 
  protect_tab.html - "Protect" tab, included from write.html
  Copyright (C) 2012 HostileFork.com
@@ -21,7 +21,7 @@
 
    See http://blackhighlighter.hostilefork.com for documentation.
 
-{% endcomment %}
+#}
 
 <div class="tabs-content" id="tabs-protect">
 
@@ -36,10 +36,10 @@
 	</div>
 
 	<div class="textarea-wrapper" id="protect-wrapper">
-	{# {% comment %} #}<!--
+	{#
 		Contents will be copied here from editor-compose textarea when tab is switched
 		When tab is switched back to compose, any protection changes are copied back
-	-->{# {% endcomment %} #}
+	#}
 	</div>
 
 	<div id="commit-json-accordion"><h3>View the low-level redacted data that will be sent to the server</h3>
