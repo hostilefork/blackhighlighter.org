@@ -32,6 +32,10 @@
 // handle blackhighlighter requests as well as serve other HTML or static
 // content.)
 //
+// This file is a *very* small part of the demo's codebase.  Most of the
+// machinery is in the client side JavaScript for performing the walkthrough,
+// along with the corresponding templated html files.
+//
 
 
 
@@ -44,7 +48,8 @@ var _ = require('underscore')._;
 //
 // GET CONFIGURATION ENVIRONMENT VARIABLES OR PROVIDE DEFAULTS
 //
-// process.env contains the environment variables of the execution context:
+// process.env contains the environment variables of the execution context,
+// with all values forced to being strings:
 //
 // http://nodejs.org/api/process.html#process_process_env
 //
@@ -52,10 +57,7 @@ var _ = require('underscore')._;
 
 // Default to listening on port 3000 if no 'set PORT=NNNN`
 
-var port = process.env.PORT;
-if (!port) {
-    port = 3000;
-}
+var port = process.env.PORT || 3000;
 
 
 // Default to local MongoDB if no 'set MONGO_CONNECT_URI=http://...'
@@ -63,25 +65,33 @@ if (!port) {
 // http://docs.mongodb.org/manual/reference/default-mongodb-port/
 // http://api.mongodb.org/java/current/com/mongodb/MongoURI.html
 
-var mongoConnectURI = process.env.MONGO_CONNECT_URI;
-if (!mongoConnectURI) {
-    mongoConnectURI = "mongodb://localhost:27017";
-}
+var mongoConnectURI 
+    = process.env.MONGO_CONNECT_URI || 'mongodb://localhost:27017';
 
 
 // To optionally give credit to your hosts, for example:
 //
 // http://opensource.nodejitsu.com/
 
-var hostingService = process.env.HOSTING_SERVICE;
-if (!hostingService) {
-    hostingService = "anonymous";
+var hostingService = process.env.HOSTING_SERVICE || 'anonymous';
+
+var hostingServiceUrl
+    = process.env.HOSTING_SERVICE_URL
+    || 'http://en.wikipedia.org/wiki/Anonymous';
+
+
+// Control Swig caching of templates; DON'T DISABLE IN PRODUCTION!
+//
+// http://paularmstrong.github.io/swig/docs/api/#SwigOpts
+
+var swigCache = 'memory';
+if (process.env.SWIG_NOCACHE) {
+    if (process.env.SWIG_NOCACHE != "1") {
+        throw Error("SWIG_NOCACHE must be 1 or unset");
+    }
+    swigCache = false;
 }
 
-var hostingServiceUrl = process.env.HOSTING_SERVICE_URL;
-if (!hostingServiceUrl) {
-    hostingServiceUrl = "http://en.wikipedia.org/wiki/Anonymous";
-}
 
 
 //
@@ -138,38 +148,31 @@ function resSendJsonForErr (res, err) {
 var express = require('express');
 var app = express();
 
-// Body Parser was moved to a separate module, there are some controversial
-// things about the behavior of the bundled bodyParser that was in Express but
-// by making it separate these are supposedly solved.
-// https://github.com/expressjs/body-parser
+
 // http://stackoverflow.com/a/24344756/211160 
 
 var bodyParser = require('body-parser');
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
 })); 
 
-// Initialize Swig default options, for full list of options see:
-//     http://paularmstrong.github.io/swig/docs/api/#SwigOpts
+
+// http://paularmstrong.github.io/swig/docs/api/#SwigOpts
 
 var swig = require('swig');
+
 swig.setDefaults({
     loader: swig.loaders.fs(__dirname + '/views'),
-
-    // TURN CACHE BACK ON in deployment environments...
-    cache: false
+    cache: swigCache
 });
 
-// Register the template engine
+
+// Register Swig to handle html; default 'view engine' extension is required
 
 app.engine('html', swig.renderFile);
 app.set('view engine', 'html');
-app.set('views', __dirname + '/views');
-
-// Note: No custom tags in Swig in use at present, though they're possible:
-//
-// http://blog.hostilefork.com/custom-tags-swig-url-django/
 
 
 // These are provided to every template context by default
@@ -181,7 +184,6 @@ app.locals.BLACKHIGHLIGHTER_BASE_URL = '/';
 app.locals.NODE_VERSION = process.version;
 app.locals.HOSTING_SERVICE = hostingService;
 app.locals.HOSTING_SERVICE_URL = hostingServiceUrl;
-
 
 
 
@@ -209,7 +211,7 @@ app.get('/query/$', function (req, res) {
 
     var commit_ids = JSON.parse(req.param('commit_ids', null));
 
-    blackhighlighter.getCommitsWithReveals(commit_ids, function(err, json) {
+    blackhighlighter.getCommitsWithReveals(commit_ids, function (err, json) {
         if (err) {
             resSendJsonForErr(res, err);
         }
@@ -228,7 +230,7 @@ app.post('/commit/$', function (req, res) {
 
     var commit = JSON.parse(req.param('commit_array', null));   
 
-    blackhighlighter.makeCommitments(commit, function(err, json) {
+    blackhighlighter.makeCommitments(commit, function (err, json) {
         if (err) {
             resSendJsonForErr(res, err);
         }
@@ -376,9 +378,11 @@ app.use("/public/js/jquery-blackhighlighter",
 
 app.use("/public", express.static(__dirname + '/public'));
 
+
 // http://stackoverflow.com/a/15463231/211160
 
 var favicon = require('serve-favicon');
+
 app.use(favicon(__dirname + '/public/favicon.ico'));
 
 
