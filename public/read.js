@@ -78,24 +78,15 @@ define([
 
 	clientCommon.resizeListener(null);
 
-	function notifyErrorOnTab(tabname, err) {
+	function notifyAlertOnTab(tabname, str) {
 		var $tab = $("#tabs-" + tabname);
-		var message = "<span><b>" + err.toString() + "</b></span>";
-
-		if (err instanceof Error) {
-			var stack = err.stack.split("\n");
-			message += "<br><br><ul><li>" 
-				+ stack.join("</li><li>")
-				+ "</li></ul>"
-				+ "<br><br>" 
-				+ 'Please save a copy of this error and report it to <a href="https://github.com/hostilefork/blackhighlighter/issues/new">the Blackhighlighter Issue Tracker</a> on GitHub!';
-		} 
+		var message = "<span><b>" + str + "</b></span>";
 
 		$tab.find(".error-display-msg").empty().html(message);
 		$tab.find('.error-display').show();
 	}
 	
-	function clearErrorOnTab(tabname) {
+	function clearAlertOnTab(tabname) {
 		var $tab = $("#tabs-" + tabname);
 		$tab.find('.error-display').hide();
 	}
@@ -326,7 +317,7 @@ define([
 
 		switch(ui.newPanel.attr('id')) {
 			case 'tabs-verify':
-				clearErrorOnTab('verify');
+				clearAlertOnTab('verify');
 				break;
 			
 			case 'tabs-show':		
@@ -338,7 +329,7 @@ define([
 				break;
 		
 			case 'tabs-reveal':
-				clearErrorOnTab('reveal');
+				clearAlertOnTab('reveal');
 				$("#tabs-reveal .textarea-wrapper").append(
 					$editor.detach()
 				);
@@ -418,7 +409,7 @@ define([
 			updateTabEnables();
 			
 			if (err) {
-				notifyErrorOnTab('verify', err);
+				notifyAlertOnTab('verify', err.toString());
 			} else {
 				$('#certificates').val('');
 				$('#tabs').tabs('option', 'active', tabIndexForId('tabs-show'));
@@ -428,7 +419,7 @@ define([
 			$('#buttons-verify').show();
 		}, 2000);
 
-		clearErrorOnTab('verify');
+		clearAlertOnTab('verify');
 	
 		var revealInput = $('#certificates').get(0).value;
 		if (blackhighlighter.trimAllWhitespace(revealInput) === '') {
@@ -488,7 +479,7 @@ define([
 			}
 
 			if (err) {
-				notifyErrorOnTab('reveal', err);
+				notifyAlertOnTab('reveal', err.toString());
 				$('#buttons-reveal').show();
 				$('#tabs').tabs('enable', tabIndexForId('tabs-verify'));
 				$('#tabs').tabs('enable', tabIndexForId('tabs-show'));

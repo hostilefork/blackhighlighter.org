@@ -56,24 +56,15 @@ define([
 		}[id];
 	}
 	
-	function notifyErrorOnTab(tabname, err) {
+	function notifyAlertOnTab(tabname, str) {
 		var $tab = $("#tabs-" + tabname);
-		var message = "<span><b>" + err.toString() + "</b></span>";
-
-		if (err instanceof Error) {
-			var stack = err.stack.split("\n");
-			message += "<br><br><ul><li>" 
-				+ stack.join("</li><li>")
-				+ "</li></ul>"
-				+ "<br><br>" 
-				+ 'Please save a copy of this error and report it to <a href="https://github.com/hostilefork/blackhighlighter/issues/new">the Blackhighlighter Issue Tracker</a> on GitHub!';
-		} 
+		var message = "<span><b>" + str + "</b></span>";
 
 		$tab.find('.error-display-msg').html(message);
 		$tab.find('.error-display').show();
 	}
 	
-	function clearErrorOnTab(tabname) {
+	function clearAlertOnTab(tabname) {
 		var $tab = $("#tabs-" + tabname);
 		$tab.find('.error-display').hide();
 	}
@@ -201,7 +192,7 @@ define([
 				break;
 
 			case 'tabs-protect':
-				clearErrorOnTab("protect");
+				clearAlertOnTab("protect");
 				// Unfortunately, switching tabs disables undo.  :(
 				// Also unfortunately, there's no undo for adding and removing protections
 				$editor.blackhighlighter('option', 'mode', 'protect');
@@ -211,7 +202,10 @@ define([
 		
 			case 'tabs-commit':
 				$('#json-protected').empty();
-				clearErrorOnTab('commit');
+
+				// We don't clear the alert on the commit tab, because we only
+				// switch to it one time in the workflow and we may have put
+				// a warning up on it *prior* to showing it.
 
 				if ($("#editor").blackhighlighter('option', 'mode') !== 'show') {
 					throw "Internal error: ommit tab enabled but no commit made.";
@@ -294,13 +288,31 @@ define([
 	var finalizeCommitUI = _.debounce(function (err) {
 
 		$('#progress-commit').hide();
-		if (err) {
-			// Since we didn't successfully commit the letter, bring buttons back
+		if (err && !(err instanceof blackhighlighter.TimestampError)) {
+			// Since we didn't successfully commit the letter, bring
+			// back the buttons
 			$('#buttons-protect').show();
 			
 			$('#tabs').tabs('enable', tabIndexForId('tabs-compose'));
-			notifyErrorOnTab('protect', err);
+			notifyAlertOnTab('protect', err.toString());
 		} else {
+
+			// In the demo, we're not strict about timestamp skew... but as one
+			// of the premises of blackhighlighter is that you are using this
+			// to prove what-you-said-when, a bad timestamp hashed into the
+			// commitment is an error worth noting.
+
+			if (err && (err instanceof blackhighlighter.TimestampError)) {
+				notifyAlertOnTab('commit',
+					'Although the commitment succeeded, the server signed the'
+					+ ' data using a timestamp of '
+            		+ err.serverDate.toUTCString()
+            		+ ", which is more than a minute off from your "
+            		+ "machine's local time setting of "
+            		+ err.clientDate.toUTCString()
+            		+ ".  Don't pass on this URL unless that is acceptable!"
+            	);
+			}
 
 			var commit = $("#editor").blackhighlighter('option', 'commit');
 
@@ -327,7 +339,7 @@ define([
 			throw "Duplicate commit attempt detected.";
 		}
 
-		clearErrorOnTab('commit');
+		clearAlertOnTab('commit');
 
 		// Hide the buttons so the user can't navigate away or click twice
 		$('#buttons-protect').hide();
