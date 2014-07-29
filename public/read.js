@@ -18,60 +18,73 @@
 //   See http://blackhighlighter.hostilefork.com for documentation.
 //
 
-// Whole-script strict mode syntax
-"use strict";
-
 define([
 	// libs which return exported objects to capture in the function prototype
+
 	'jquery',
 	'underscore',
 	'blackhighlighter',
 	'client-common',
 
 	// these libs have no results, they just add to the environment (via shims)
+
 	'jqueryui',
 	'expanding',
 	'actual'
+
 ], function($, _, blackhighlighter, clientCommon) {
+
+    // http://stackoverflow.com/questions/1335851/
+    // http://stackoverflow.com/questions/4462478/
+
+	"use strict";
 
 	// We used to pass in a base URL in PARAMS.base_url, but now we go off
 	// of the browser's hostname and port for that...we could conceivably
 	// check to make sure the server and client are in agreement of what
 	// the server's base url is.
+
 	var base_url = "http://" + document.location.host + "/";
 
 	// Theme all the button-type-things but not the <a href="#" ..> style
+
 	$("input:submit, button").button();
 
 	// Make all the indeterminate progress bars animate.  They're hidden.
+
 	$(".indeterminate-progress").progressbar({value: false});
 
 	// The JSON in the reveal is static and populated later
 	// This just sets up a collapsible accordion to contain it, start closed
+
 	$('#reveal-json-accordion').accordion({
+		// only collapsible accordions can be closed so no panel shows
+
 		collapsible: true,
 		active: false,
 
 		// autoHeight doesn't seem to work by itself; mumbo-jumbo needed
 		// http://stackoverflow.com/a/15413662/211160
+
 		heightStyle: "content",
 		autoHeight: false,
         clearStyle: true
 	});
 	
-	// jquery UI does tabs by index, not ID - using this to increase readability
+	// jquery UI does tabs by index, not ID; using to increase readability
 	// NOTE: a function as opposed to a raw map for consistency with
 	// accordionIndexForId
+
 	function tabIndexForId(id) {
 		return {
 			'tabs-verify': 0, 
 			'tabs-show': 1,
-			'tabs-reveal': 2,
-			'tabs-done': 3
+			'tabs-reveal': 2
 		}[id];
 	}
 
 	// Bring tabs to life.
+
 	$('#tabs').tabs();
 	
 	$(window).resize(clientCommon.resizeListener);
@@ -101,7 +114,8 @@ define([
 			$('#tabs').tabs('enable', tabIndexForId('tabs-reveal'));
 			$('#buttons-show-before').hide();			
 			$('#buttons-show-after').show();
-		} else {
+		}
+		else {
 			$('#tabs').tabs('disable', tabIndexForId('tabs-reveal'));
 			$('#buttons-show-after').hide();			
 			$('#buttons-show-before').show();
@@ -116,192 +130,6 @@ define([
 	});
 
 	clientCommon.plugHostingServiceIfNecessary(PARAMS.HOSTING_SERVICE);
-	
-	// The user is allowed to type in or paste certificates.  For reasons of readability
-	// and to give users the ability to easily extract individual certificates, we
-	// accept a lot of non-JSON-parser-compatible stuff (like comments and arrays without
-	// commas).  This function tries to reform the pseudo-JSON into real JSON.
-	function tidyInputForJsonParser(pseudoJson) {
-		if (!_.isString(pseudoJson)) {
-			throw 'Passed a non-string into tidyInputForJsonParser';
-		}
-		
-		var tidyJson = '';
-
-		// start by removing comments and whitespace
-		var inputLength = pseudoJson.length;
-		var index = 0;
-		var whitespacePending = false;
-		var skipNext = false;
-		var last = null;
-		// NOTE: Internet Explorer doesn't allow array subscript access e.g. psuedoJson[0] (?)
-		var current = (inputLength > 0) ? pseudoJson.charAt(0) : null;
-		var next = undefined;
-		function pushCharacter(ch) {
-			if (ch == ' ' || ch == '\t' || ch == '\n') {
-				whitespacePending = true;
-			} else {
-				if (whitespacePending && (tidyJson !== '')) {
-					tidyJson += ' ';
-					whitespacePending = false;
-				}
-				tidyJson += ch;
-			}
-		}
-		function pushWhitespace() {
-			// we strip out all whitespace for the moment...but we could collapse it
-			if (false) {
-				whitespacePending = true;
-			}
-		}
-		function skipNextCharacter() {
-			skipNext = true;
-		}
-
-		var topmostBraceCount = 0;
-		var braceDepth = 0;
-		var commaFound = undefined;
-		
-		var stringType = null;
-		var commentType = null;		
-		while (current !== null) {
-			next = (index == inputLength-1) ? null : pseudoJson.charAt(index+1);
-
-			if (skipNext) {
-			
-				skipNext = false;
-				
-			} else if (commentType !== null) {
-			
-				switch (commentType) {
-					case '//':
-						if (current == '\n') {
-							commentType = null;
-						}
-						break;
-						
-					case '/*':
-						if (current == '*' && next == '/') {
-							skipNextCharacter();
-							commentType = null;
-						}
-						break;
-						
-					default:
-						throw 'Unknown comment type';
-				}
-				
-			} else if (stringType !== null) {
-			
-				if (current == '\n') {
-					throw 'End of line in middle of quote context';
-				}
-				
-				if (current == '\\') {
-					if (next == stringType) {
-						// it's an escaped quote marker, so it needs to go into the
-						// output stream... go ahead and write the escape and the
-						// quote end and then skip the quote end so we don't
-						// see it in our next iteration and think it's a real quote ending
-						pushCharacter(current);
-						pushCharacter(next);
-						skipNextCharacter(); 
-					} else {
-						pushCharacter(current);
-					}
-				} else if (current == stringType) {
-					pushCharacter(current);
-					stringType = null;
-				} else {
-					pushCharacter(current);
-				}
-				
-			} else {
-			
-				// general handling if we are not (yet) in a quote or in a string
-				switch (current) {
-					case '{':
-						if (braceDepth === 0) {
-							if (topmostBraceCount > 0) {
-								if (!commaFound) {
-									pushCharacter(',');
-									pushWhitespace();
-								}
-								commaFound = undefined;
-							}
-							topmostBraceCount++;
-						}
-						braceDepth++;
-						pushCharacter(current);
-						break;
-
-					case ',':
-						if (!_.isUndefined(commaFound)) {
-							commaFound = true;
-						}
-						pushCharacter(current);
-						break;
-						
-					case '}':
-						if (braceDepth === 0) {
-							throw 'Bad brace nesting in Json input';
-						} else {
-							braceDepth--;
-							if (braceDepth === 0) {
-								commaFound = false;
-							}
-						}
-						pushCharacter(current);
-						break;
-					
-					case '"':
-					case "'":
-						stringType = current;
-						pushCharacter(current);
-						break;
-						
-					case '/':
-						if (next == '*') {
-							commentType = '/*';
-							skipNextCharacter();
-						} else if (next == '/') {
-							commentType = '//';
-							skipNextCharacter();
-						} else {
-							pushCharacter(current);
-						}
-						break;
-						
-					case '\n':
-					case ' ':
-					case '\t':
-						pushWhitespace();
-						break;
-						
-					default:
-						pushCharacter(current);
-						break;
-				}
-			}
-			last = current;
-			current = next;
-			index++;
-		}
-
-		// if we have something like "{foo},{bar}", then ensure it has
-		// brackets e.g. "[{foo},{bar}]"
-
-		if (topmostBraceCount > 1) {
-			if (tidyJson[0] != '[') {
-				tidyJson = '[' + tidyJson;
-			}
-			if (tidyJson[tidyJson.length-1] != ']') {
-				tidyJson = tidyJson + ']';
-			}
-		}
-
-		return tidyJson;
-	}
 		
 	updateTabEnables();
 	
@@ -321,7 +149,7 @@ define([
 				break;
 			
 			case 'tabs-show':		
-				// Shouldn't have to do anything?
+				clearAlertOnTab('show');
 				$("#tabs-show .textarea-wrapper").append(
 					$editor.detach()
 				);
@@ -335,9 +163,13 @@ define([
 				);
 				$editor.blackhighlighter('option', 'mode', 'reveal');
 
-				var protections = $("#editor").blackhighlighter("option", "protected");
+				var protections = $("#editor").blackhighlighter(
+					"option", "protected"
+				);
+
 				// REVIEW: used to sort values in array by key (hash)
 				// Does it matter?  Should there be a "canonized" ordering?
+
 				$('#json-reveal').text(
 					JSON.stringify(_.values(protections), null, ' ')
 				);
@@ -383,17 +215,7 @@ define([
 			
 		default:
 			throw 'invalid PARAMS.tabstate';
-	}	
-
-/*
-	function showRevealInTab(revealKey) {
-		// first make sure we're on the verify tab
-		$('#tabs').tabs('option', 'active', tabIndexForId('tabs-verify'));
-		if (Globals.lastAccordionId != revealKey) {
-			$('#accordion').accordion('activate', accordionIndexForId(revealKey));
-		}
-	};
-	*/
+	}
 
 	$(".previous-step").on('click', function(event) {
 		$('#tabs').tabs('option', 'active', tabIndexForId(lastTabId) - 1);
@@ -410,7 +232,8 @@ define([
 			
 			if (err) {
 				notifyAlertOnTab('verify', err.toString());
-			} else {
+			}
+			else {
 				$('#certificates').val('');
 				$('#tabs').tabs('option', 'active', tabIndexForId('tabs-show'));
 			}
@@ -425,56 +248,39 @@ define([
 		if (blackhighlighter.trimAllWhitespace(revealInput) === '') {
 			// if they haven't typed anything into the box
 			$('#tabs').tabs('option', 'active', tabIndexForId('tabs-show'));
-		} else {
+		}
+		else {
 			$('#tabs').tabs('disable', tabIndexForId('tabs-show'));
 			$('#tabs').tabs('disable', tabIndexForId('tabs-reveal'));
 			$('#progress-verify').show();
 			$('#buttons-verify').hide();
 
-			var tidyRevealText = tidyInputForJsonParser(revealInput);
-			if (!tidyRevealText) {
-				finalizeVerifyUI(Error("No certificates provided."));
-				return;
-			}
-
 			// Catch parsing errors and put them in an error message
 			try {
 				var certificate = $("#editor").blackhighlighter(
-					"certificate", 'decode', tidyRevealText
+					"certificate", 'decode', clientCommon.unwrapCertificate(
+						revealInput
+					)
 				);
-					
+				
 				$("#editor").blackhighlighter('verify', certificate.reveals);
 
 				finalizeVerifyUI(null);
 
 			} catch (err) {
 				// do not continue to next tab
+
 				finalizeVerifyUI(err);
 			}
 		}
 	});
-
-/*			var namePart = reveal.name ? (': ' + reveal.name) : '';
-			accordionHeaderForId(reveal.sha256).empty().append(
-				'<span>' + (server ? 'Server Certificate' : 'Local Certificate') + namePart + '</span>');
-			var spanPart = $('<span></span>');
-			spanPart.append($('<p>' + JSON.stringify(reveal, null, ' ') + '</p>'));
-			if (!server) {
-				var buttonPart = $('<input type="button" value="Remove" name="' + reveal.sha256 + '"></input>');
-				buttonPart.click(function() {
-					this.$div.removeBlackhighlighterReveal(this.name);
-					return true;
-				});
-				spanPart.append(buttonPart);
-			}			
-			accordionContentForId(reveal.sha256).empty().append(spanPart);*/
-
 
 	$("#reveal-button").on('click', function(event) {
 
 		var finalizeRevealUI = _.debounce(function (err) {
 			function absoluteFromRelativeURL(url) {
 				// http://objectmix.com/javascript/352627-relative-url-absolute-url.html
+
 				return $('<a href="' + url + '"></a>').get(0).href;
 			}
 
@@ -487,19 +293,25 @@ define([
 				// we only hide the progress bar in the error case, because 
 				// otherwise we want the animation to stick around until the
 				// redirect has completed
+
 				$('#progress-reveal').hide();
-			} else {
+			}
+			else {
 				// We want to redirect to the "show" page for this letter
 				// Which means we have to reload if we were already on the
 				// letter's "show" URL
+
 				if (PARAMS.tabstate == 'show') {
 					// Reload semantics vary in JavaScript and browser versions
 					// http://grizzlyweb.com/webmaster/javascripts/refresh.asp
+
 					window.location.reload(true);
-				} else {
+				}
+				else {
 					// http://stackoverflow.com/a/948242/211160
+
 					windowlocation.href =
-						blackhighlighter.makeShowUrl(
+						clientCommon.makeShowUrl(
 							base_url, PARAMS.commit.commit_id
 						);
 				}
