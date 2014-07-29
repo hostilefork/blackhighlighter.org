@@ -49,62 +49,52 @@ blackhighlighter|DISCUSSION
 {% block content %}
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
-    <div id="tabs">
-        <ul class="tabs">
-            <li><a href="#tabs-discussion">Discussion</a></li>      
-        </ul>
+<div id="tabs">
+    <ul class="tabs">
+        <li><a href="#tabs-discussion">Discussion</a></li>      
+    </ul>
         
-<div class="tabs-discussion" id="tabs-discussion">
+    <div class="tabs-discussion" id="tabs-discussion">
 
-    <div class="leading-section">
-        <p>This page is designed to demonstrate that blackhighlighter really is a *widget*.  While the blackhighlighter demo sandbox belabors the points of how the different phases work by putting them on six separate tabs and pages, you can use Ajax and never leave a single page.  And you can have multiple blackhighlighter widgets on a page, as you might any textual div.  Hence, the generality of the tool.</p>
+        <div class="leading-section">
+            <p>This page is designed to demonstrate that blackhighlighter really is a *widget*.  While the blackhighlighter demo sandbox belabors the points of how the different phases work by putting them on six separate tabs across pages, you can use Ajax and never leave a single page.</p>
 
-        <p>This is a one-page demo that lets you make as many blackhighlighter widgets as you like, commit them... verify certificates, and reveal them.  It does all that without needing any more than a single URL.  It shows the basis for a discussion system.</p>
-    </div>
-
-
-    <div class="textarea-wrapper" id="compose-wrapper">
-        <div id="compose-protect-publish-toolbar" class="ui-widget-header ui-corner-all">
-          <span id="compose-protect">
-            <input type="radio" id="compose" name="compose" checked="checked"><label for="compose">Compose</label>
-            <input type="radio" id="protect" name="protect"><label for="protect">Protect</label>
-          </span>
-
-          <button id="publish">Publish</button>
+            <p>You can also have multiple blackhighlighter widgets on a page&mdash;as you might any textual div.  This makes Blackhighlighter general enough that it could be used (for instance) in a blog commenting system.</p>
         </div>
-        <div id="verify-reveal-toolbar" class="ui-widget-header ui-corner-all">
-          <button id="check-hidden">Check Hidden Portions</button>
 
-          <button id="reveal">Reveal Publicly</button>
+
+        <div class="textarea-wrapper" id="compose-wrapper">
+            <div id="compose-protect-publish-toolbar" class="ui-widget-header ui-corner-all">
+              <span id="compose-protect">
+                <input type="radio" id="compose" name="compose-protect" checked="checked"><label for="compose">Compose</label>
+                <input type="radio" id="protect" name="compose-protect"><label for="protect">Protect</label>
+              </span>
+
+              <button id="publish">Publish</button>
+            </div>
+            <div id="verify-reveal-toolbar" class="ui-widget-header ui-corner-all" style="display:none;">
+              <button id="check-hidden">Check Hidden Portions</button>
+
+              <button id="reveal">Reveal Publicly</button>
+            </div>
+            <div id="editor" data-ph="Enter text here"></div>
         </div>
-        <div id="editor" data-ph="Enter text here"></div>
+
     </div>
 
-    <div class="trailing-section">
-      <div class="action-buttons">
-        <button class="add-comment">
-          <b>Add Comment</b>
-        </button>
-      </div>
+    <div id="certificate-form" title="Keep this certificate">
+        <p class="validateTips">Paste your blackhighlighter certificate text below.  No information will be revealed to the server at this time.</p>
 
-        <div class="ui-state-highlight ui-corner-all" style="margin-top: 20px; padding: 0 .7em;"><p>
-            <span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
-            <strong>Note:</strong> This
-            website is a <i>demonstration sandbox</i> for using the blackhighlighter
-            jQuery plugin.  The database is regularly erased&mdash;which means your post might not be here tomorrow!  If you want a more persistent service, then
-            <a href="https://github.com/hostilefork/blackhighlighter">
-            install the software yourself</a>, or get in touch with
-            <span style="font-family: monospace;">brian@hostilefork.com</span>
-            about joining forces to build blackhighlighter.com
-        </p></div>
-    </div>      
-    </div>
-
-    <div id="dialog-form" title="Check Hidden Portions">
-      <p class="validateTips">Paste your blackhighlighter certificate text below.  No information will be revealed to the server at this time.</p>
- 
-        <textarea class="certificate-entry ui-widget-content ui-corner-all" id="certificates" spellcheck="false"></textarea>
+        <div class="ui-state-highlight ui-corner-all certificate-display" id="json-protected"></div>
      
     </div>
+
+    <div id="check-form" title="Check Hidden Portions">
+        <p class="validateTips">Paste your blackhighlighter certificate text below.  No information will be revealed to the server at this time.</p>
+
+        <textarea class="certificate-entry ui-widget-content ui-corner-all" id="certificates" spellcheck="false"></textarea>
+    </div>
+
+</div>
  
 {% endblock content %}
