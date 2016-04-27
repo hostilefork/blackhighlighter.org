@@ -8,7 +8,7 @@
 		"www.blackhighlighter.org"
 	],
 	"preferGlobal": "false",
-	"version": "0.3.0-15",
+	"version": "0.3.0-18",
 	"author": "Brian Dickens <brian@hostilefork.com>",
 	"description": "Code for site at blackhighlighter.org, which is a sandbox and step-by-step walkthrough of the blackhighlighter package",
 	"repository": {
@@ -22,16 +22,17 @@
 		"transparency",
 		"accountability"
 	],
+	"_comment_MayWorkWithEarlierVersions": "Minimum compatibility not measured",
 	"dependencies": {
-		"requirejs": "*",
-		"body-parser": "*",
+		"requirejs": "2.2.0",
+		"body-parser": "1.15.0",
 		"express": ">=3.0.0",
-		"serve-favicon": "*",
-		"swig": "*",
-		"mongodb": "*",
-		"underscore": "*",
-		"q": "*",
-		"blackhighlighter": "*"
+		"serve-favicon": "2.3.0",
+		"swig": "1.4.2",
+		"mongodb": "2.1.18",
+		"underscore": "1.8.3",
+		"q": "1.4.1",
+		"blackhighlighter": "0.9.11"
 	},
 	"noAnalyze": true,
 	"devDependencies": {
