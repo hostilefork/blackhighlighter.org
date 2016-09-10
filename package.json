@@ -39,9 +39,9 @@
 		"test": ">=0.0.5"
 	},
 	"bundleDependencies": [],
-	"license": "AGPL",
+	"license": "AGPL-1.0",
 	"engines": {
-		"node": "0.10.x"
+		"node": ">=4.0.0"
 	},
 	"scripts": {
 		"start": "app.js",
