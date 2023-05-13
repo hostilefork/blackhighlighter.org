@@ -394,5 +394,6 @@ app.use(favicon(__dirname + '/public/favicon.ico'));
 //
 
 console.log("Listening on port " + port);
+console.log("MONGO_CONNECT_URI is " + mongoConnectURI);
 
 app.listen(port);
