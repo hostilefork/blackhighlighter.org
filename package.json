@@ -29,7 +29,7 @@
 		"express": ">=3.0.0",
 		"serve-favicon": "2.3.0",
 		"swig": "1.4.2",
-		"mongodb": "2.1.18",
+		"mongodb": "5.5.0",
 		"underscore": "1.8.3",
 		"q": "1.4.1",
 		"blackhighlighter": "0.9.11"
