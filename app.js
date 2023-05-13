@@ -130,10 +130,10 @@ function resSendJsonForErr (res, err) {
 
     if (err instanceof blackhighlighter.ClientError) {
         console.error(err.message);
-        res.json(400, { error: err.toString() });
+        res.status(400).json({ error: err.toString() });
     }
     else {
-        res.json(500, { error: err.toString() });
+        res.status(500).json({ error: err.toString() });
     }
 }
 
@@ -209,7 +209,7 @@ app.get('/query/$', function (req, res) {
     // if Blackhighlighter is being used for a commenting system (for instance)
     // we don't want to have a separate Ajax request for each comment.
 
-    var commit_ids = JSON.parse(req.param('commit_ids', null));
+    var commit_ids = JSON.parse(req.params.commit_ids);
 
     blackhighlighter.getCommitsWithReveals(commit_ids, function (err, json) {
         if (err) {
@@ -228,7 +228,7 @@ app.post('/commit/$', function (req, res) {
     //
     // https://github.com/hostilefork/blackhighlighter/issues/51
 
-    var commit = JSON.parse(req.param('commit_array', null));   
+    var commit = JSON.parse(req.body.commit_array);
 
     blackhighlighter.makeCommitments(commit, function (err, json) {
         if (err) {
@@ -248,7 +248,7 @@ app.post('/reveal/$', function (req, res) {
     // https://github.com/hostilefork/blackhighlighter/issues/51
 
     var commit_id_with_reveals_array
-        = req.param('commit_id_with_reveals_array');
+        = req.body.commit_id_with_reveals_array;
 
     blackhighlighter.revealSecrets(
         commit_id_with_reveals_array,
@@ -303,7 +303,7 @@ app.get('/write/$', function (req, res) {
 //
 
 function showOrVerify (req, res, tabstate) {
-    var commit_id = req.param('commit_id', null);
+    var commit_id = req.params.commit_id;
 
     blackhighlighter.getCommitsWithReveals([commit_id], function(err, json) {
         if (err) {
