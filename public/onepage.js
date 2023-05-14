@@ -42,7 +42,8 @@ define([
 	// check to make sure the server and client are in agreement of what
 	// the server's base url is.
 
-	var base_url = "http://" + document.location.host + "/";
+	const scheme = document.location.protocol;  // http: or https:, has colon
+	var base_url = scheme + "//" + document.location.host + "/";
 
 	// Makes it easier to select certificate, but impossible to partially
 	// select it.  Seems a good tradeoff.
