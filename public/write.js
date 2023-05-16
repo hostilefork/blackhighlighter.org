@@ -29,7 +29,6 @@ define([
     // these libs have no results, they just add to the environment (via shims)
 
     'jqueryui',
-    'json2',
     'actual'
 
 ], function($, _, blackhighlighter, clientCommon) {
