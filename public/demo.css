@@ -1,35 +1,35 @@
-/* 
-	Note: only valid color names are:
-		aqua, black, blue, fuchsia, gray, green, lime, maroon, navy, 
-		olive, purple, red, silver, teal, white, and yellow.
-	See http://www.w3schools.com/css/css_colornames.asp for hex codes 
+/*
+    Note: only valid color names are:
+        aqua, black, blue, fuchsia, gray, green, lime, maroon, navy,
+        olive, purple, red, silver, teal, white, and yellow.
+    See http://www.w3schools.com/css/css_colornames.asp for hex codes
 */
 
 
 body {
-	/*
-	 * I dunno what "the answer" is but if you fill the whole width
-	 * it looks ugly.
-	 *
-	 * https://jdm-digital.com/2012/11/why-max-width-960/
-	 */
-	min-width: 720px;
-	max-width: 960px;
+    /*
+     * I dunno what "the answer" is but if you fill the whole width
+     * it looks ugly.
+     *
+     * https://jdm-digital.com/2012/11/why-max-width-960/
+     */
+    min-width: 720px;
+    max-width: 960px;
 
-	/* http://cssfontstack.com/ */
-	font-family: "Proxima Nova Regular","Helvetica Neue",Calibri,"Droid Sans",Helvetica,Arial,sans-serif;
-	font-size: 16px;
+    /* http://cssfontstack.com/ */
+    font-family: "Proxima Nova Regular","Helvetica Neue",Calibri,"Droid Sans",Helvetica,Arial,sans-serif;
+    font-size: 16px;
 
-	margin: 0 auto;
-	padding-top: 16px;
+    margin: 0 auto;
+    padding-top: 16px;
 
-	background-color: #888;
+    background-color: #888;
 }
 
 
 /* Pad the tabs a bit more than they are by default */
 .ui-tabs .ui-tabs-nav li a {
-	padding: .5em 1.5em;
+    padding: .5em 1.5em;
 }
 
 
@@ -39,17 +39,17 @@ body {
  * It's technically possible in some browsers to offset it, but not all.
  */
 .ui-tabs .ui-tabs-nav {
-	padding-top: 110px;
-	background-image: url(blackhighlighter-header-logo.png);
-	background-position: top right;
-	background-repeat: no-repeat;
+    padding-top: 110px;
+    background-image: url(blackhighlighter-header-logo.png);
+    background-position: top right;
+    background-repeat: no-repeat;
 }
 
 
 /*
  * Unfortunately textareas have a problem with having padding and margin
  * directly applied to them.
- * 
+ *
  * http://stackoverflow.com/questions/271067/
  */
 div.textarea-wrapper {
@@ -64,8 +64,8 @@ div.textarea-wrapper {
 
   /*  margin: ...; */ /* see above... */
 
-   	width: 100%;
-   	resize: none;
+       width: 100%;
+       resize: none;
     -webkit-box-sizing: border-box;
        -moz-box-sizing: border-box;
             box-sizing: border-box;
@@ -73,83 +73,83 @@ div.textarea-wrapper {
     min-height: 200px;
 }
 .blackhighlighter {
-	position: relative;
-	color: black;
+    position: relative;
+    color: black;
     background-color: white;
 
-	/* I don't know if I like this or not, but it's something to think on */
-	/* border: double 6px #333; */
+    /* I don't know if I like this or not, but it's something to think on */
+    /* border: double 6px #333; */
 }
 
 /*
  * Currently need this specificity to override what jQuery UI does to
  * any textarea that lives underneath a tab!
  */
-div.textarea-wrapper .certificate-display, 
+div.textarea-wrapper .certificate-display,
 div.textarea-wrapper .certificate-entry {
-	white-space: pre;
-	height: auto;
-	font-family: "Andale Mono", AndaleMono, monospace;
-	font-size: 14px;
+    white-space: pre;
+    height: auto;
+    font-family: "Andale Mono", AndaleMono, monospace;
+    font-size: 14px;
 }
 
 div.tabs-content div.action-buttons {
-	text-align: center;
+    text-align: center;
 }
 
 div.credits {
-	text-align: center;
-	color: #BBB;
+    text-align: center;
+    color: #BBB;
 }
 
 div.credits a {
-	color: inherit;
-	font-weight: bold;
+    color: inherit;
+    font-weight: bold;
 }
 
 .indeterminate-progress {
-	margin: 10px;
+    margin: 10px;
 }
 
 div.leading-section ul {
-	margin-left: 20px;
-	margin-right: 100px;
+    margin-left: 20px;
+    margin-right: 100px;
 }
 
 div.leading-section li {
-	margin-bottom: 8px;
+    margin-bottom: 8px;
 }
 
 div.action-buttons {
-	margin: 8px;
+    margin: 8px;
 }
 
 
 /* LOADING ANIMATION */
 
 div.loader {
-    width: 100%; 
-    position: absolute; 
-    top: 0; 
-    bottom: 0;         
-    left: 0; 
-    right: 0; 
-    display: block; 
-    height: 100%; 
-    z-index: 0; 
-    background: url(preload.gif) no-repeat center center; 
+    width: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: block;
+    height: 100%;
+    z-index: 0;
+    background: url(preload.gif) no-repeat center center;
     content: ""
 }
 
 div.preload {
-	display: none;
+    display: none;
 }
 
 
 /* HOMEPAGE */
 
 div.homepage-animation {
-	text-align: center;
+    text-align: center;
 }
 
 
@@ -157,11 +157,11 @@ div.homepage-animation {
 /* http://jqueryui.com/button/#toolbar */
 
 #toolbar {
-	padding: 4px;
-	display: inline-block;
+    padding: 4px;
+    display: inline-block;
 }
 
 /* support: IE7 */
 *+html #toolbar {
-	display: inline;
+    display: inline;
 }

@@ -19,315 +19,315 @@
 //
 
 define([
-	// libs which return exported objects to capture in the function prototype
+    // libs which return exported objects to capture in the function prototype
 
-	'jquery',
-	'underscore',
-	'blackhighlighter',
-	'client-common',
+    'jquery',
+    'underscore',
+    'blackhighlighter',
+    'client-common',
 
-	// these libs have no results, they just add to the environment (via shims)
+    // these libs have no results, they just add to the environment (via shims)
 
-	'jqueryui',
-	'expanding',
-	'actual'
+    'jqueryui',
+    'expanding',
+    'actual'
 
 ], function($, _, blackhighlighter, clientCommon) {
 
     // http://stackoverflow.com/questions/1335851/
     // http://stackoverflow.com/questions/4462478/
 
-	"use strict";
+    "use strict";
 
-	// We used to pass in a base URL in PARAMS.base_url, but now we go off
-	// of the browser's hostname and port for that...we could conceivably
-	// check to make sure the server and client are in agreement of what
-	// the server's base url is.
+    // We used to pass in a base URL in PARAMS.base_url, but now we go off
+    // of the browser's hostname and port for that...we could conceivably
+    // check to make sure the server and client are in agreement of what
+    // the server's base url is.
 
-	const scheme = document.location.protocol;  // http: or https:, has colon
-	var base_url = scheme + "//" + document.location.host + "/";
+    const scheme = document.location.protocol;  // http: or https:, has colon
+    var base_url = scheme + "//" + document.location.host + "/";
 
-	// Theme all the button-type-things but not the <a href="#" ..> style
+    // Theme all the button-type-things but not the <a href="#" ..> style
 
-	$("input:submit, button").button();
+    $("input:submit, button").button();
 
-	// Make all the indeterminate progress bars animate.  They're hidden.
+    // Make all the indeterminate progress bars animate.  They're hidden.
 
-	$(".indeterminate-progress").progressbar({value: false});
+    $(".indeterminate-progress").progressbar({value: false});
 
-	// The JSON in the reveal is static and populated later
-	// This just sets up a collapsible accordion to contain it, start closed
+    // The JSON in the reveal is static and populated later
+    // This just sets up a collapsible accordion to contain it, start closed
 
-	$('#reveal-json-accordion').accordion({
-		// only collapsible accordions can be closed so no panel shows
+    $('#reveal-json-accordion').accordion({
+        // only collapsible accordions can be closed so no panel shows
 
-		collapsible: true,
-		active: false,
+        collapsible: true,
+        active: false,
 
-		// autoHeight doesn't seem to work by itself; mumbo-jumbo needed
-		// http://stackoverflow.com/a/15413662/211160
+        // autoHeight doesn't seem to work by itself; mumbo-jumbo needed
+        // http://stackoverflow.com/a/15413662/211160
 
-		heightStyle: "content",
-		autoHeight: false,
+        heightStyle: "content",
+        autoHeight: false,
         clearStyle: true
-	});
-	
-	// jquery UI does tabs by index, not ID; using to increase readability
-	// NOTE: a function as opposed to a raw map for consistency with
-	// accordionIndexForId
+    });
 
-	function tabIndexForId(id) {
-		return {
-			'tabs-verify': 0, 
-			'tabs-show': 1,
-			'tabs-reveal': 2
-		}[id];
-	}
+    // jquery UI does tabs by index, not ID; using to increase readability
+    // NOTE: a function as opposed to a raw map for consistency with
+    // accordionIndexForId
 
-	// Bring tabs to life.
+    function tabIndexForId(id) {
+        return {
+            'tabs-verify': 0,
+            'tabs-show': 1,
+            'tabs-reveal': 2
+        }[id];
+    }
 
-	$('#tabs').tabs();
-	
-	$(window).resize(clientCommon.resizeListener);
+    // Bring tabs to life.
 
-	clientCommon.resizeListener(null);
+    $('#tabs').tabs();
 
-	function notifyAlertOnTab(tabname, str) {
-		var $tab = $("#tabs-" + tabname);
-		var message = "<span><b>" + str + "</b></span>";
+    $(window).resize(clientCommon.resizeListener);
 
-		$tab.find(".error-display-msg").empty().html(message);
-		$tab.find('.error-display').show();
-	}
-	
-	function clearAlertOnTab(tabname) {
-		var $tab = $("#tabs-" + tabname);
-		$tab.find('.error-display').hide();
-	}
+    clientCommon.resizeListener(null);
 
-	function updateTabEnables() {
-		$('#tabs').tabs('enable', tabIndexForId('tabs-verify'));
-		$('#tabs').tabs('enable', tabIndexForId('tabs-show'));
+    function notifyAlertOnTab(tabname, str) {
+        var $tab = $("#tabs-" + tabname);
+        var message = "<span><b>" + str + "</b></span>";
 
-		var protections = $("#editor").blackhighlighter('option', 'protected');
+        $tab.find(".error-display-msg").empty().html(message);
+        $tab.find('.error-display').show();
+    }
 
-		if (_.values(protections).length) {
-			$('#tabs').tabs('enable', tabIndexForId('tabs-reveal'));
-			$('#buttons-show-before').hide();			
-			$('#buttons-show-after').show();
-		}
-		else {
-			$('#tabs').tabs('disable', tabIndexForId('tabs-reveal'));
-			$('#buttons-show-after').hide();			
-			$('#buttons-show-before').show();
-		}
-	}
+    function clearAlertOnTab(tabname) {
+        var $tab = $("#tabs-" + tabname);
+        $tab.find('.error-display').hide();
+    }
 
-	$("#editor").blackhighlighter({
-		mode: 'show',
-		commit: PARAMS.commit,
-		reveals: PARAMS.reveals,
-		update: updateTabEnables
-	});
+    function updateTabEnables() {
+        $('#tabs').tabs('enable', tabIndexForId('tabs-verify'));
+        $('#tabs').tabs('enable', tabIndexForId('tabs-show'));
 
-	clientCommon.plugHostingServiceIfNecessary(PARAMS.HOSTING_SERVICE);
-		
-	updateTabEnables();
-	
-	// we start on verify tab, and don't get a select message
+        var protections = $("#editor").blackhighlighter('option', 'protected');
 
-	var lastTabId = 'tabs-verify';
+        if (_.values(protections).length) {
+            $('#tabs').tabs('enable', tabIndexForId('tabs-reveal'));
+            $('#buttons-show-before').hide();
+            $('#buttons-show-after').show();
+        }
+        else {
+            $('#tabs').tabs('disable', tabIndexForId('tabs-reveal'));
+            $('#buttons-show-after').hide();
+            $('#buttons-show-before').show();
+        }
+    }
 
-	// Bind function for what happens on tab select
-	
-	$('#tabs').on('tabsbeforeactivate', function(event, ui) {
+    $("#editor").blackhighlighter({
+        mode: 'show',
+        commit: PARAMS.commit,
+        reveals: PARAMS.reveals,
+        update: updateTabEnables
+    });
 
-		var $editor = $("#editor");
+    clientCommon.plugHostingServiceIfNecessary(PARAMS.HOSTING_SERVICE);
 
-		switch(ui.newPanel.attr('id')) {
-			case 'tabs-verify':
-				clearAlertOnTab('verify');
-				break;
-			
-			case 'tabs-show':		
-				clearAlertOnTab('show');
-				$("#tabs-show .textarea-wrapper").append(
-					$editor.detach()
-				);
-				$editor.blackhighlighter('option', 'mode', 'show');
-				break;
-		
-			case 'tabs-reveal':
-				clearAlertOnTab('reveal');
-				$("#tabs-reveal .textarea-wrapper").append(
-					$editor.detach()
-				);
-				$editor.blackhighlighter('option', 'mode', 'reveal');
+    updateTabEnables();
 
-				var protections = $("#editor").blackhighlighter(
-					"option", "protected"
-				);
+    // we start on verify tab, and don't get a select message
 
-				// REVIEW: used to sort values in array by key (hash)
-				// Does it matter?  Should there be a "canonized" ordering?
+    var lastTabId = 'tabs-verify';
 
-				$('#json-reveal').text(
-					JSON.stringify(_.values(protections), null, ' ')
-				);
-				break;
-		
-			case 'tabs-done':
-				// nothing to do?
-				break;
+    // Bind function for what happens on tab select
 
-			default:
-				throw 'no match for tab in read.js';
-		}
-		lastTabId = ui.newPanel.attr('id');
-	});
+    $('#tabs').on('tabsbeforeactivate', function(event, ui) {
 
-	// We can only set up the expanding text area if that text area is visible
-	// but it remembers after that, as long as the CSS changes don't get too
-	// drastic...
+        var $editor = $("#editor");
 
-	var expandingInitialized = false;
+        switch(ui.newPanel.attr('id')) {
+            case 'tabs-verify':
+                clearAlertOnTab('verify');
+                break;
 
-	$('#tabs').on('tabsactivate', function (event, ui) {
-		if (ui.newPanel.attr('id') == 'tabs-verify') {
-			if (!expandingInitialized) {
-				$('#certificates').expanding();
-			}
+            case 'tabs-show':
+                clearAlertOnTab('show');
+                $("#tabs-show .textarea-wrapper").append(
+                    $editor.detach()
+                );
+                $editor.blackhighlighter('option', 'mode', 'show');
+                break;
 
-			// attempting to set focus to a hidden item also has trouble
-			// sometimes so better to do this after the tab is being shown
+            case 'tabs-reveal':
+                clearAlertOnTab('reveal');
+                $("#tabs-reveal .textarea-wrapper").append(
+                    $editor.detach()
+                );
+                $editor.blackhighlighter('option', 'mode', 'reveal');
 
-			$('#certificates').focus();
-		}
-	});
+                var protections = $("#editor").blackhighlighter(
+                    "option", "protected"
+                );
 
-	switch (PARAMS.tabstate) {
-		case 'verify':
-			$('#tabs').tabs('option', 'active', tabIndexForId('tabs-verify'));
-			break;
-			
-		case 'show':
-			$('#tabs').tabs('option', 'active', tabIndexForId('tabs-show'));
-			break;
-			
-		default:
-			throw 'invalid PARAMS.tabstate';
-	}
+                // REVIEW: used to sort values in array by key (hash)
+                // Does it matter?  Should there be a "canonized" ordering?
 
-	$(".previous-step").on('click', function(event) {
-		$('#tabs').tabs('option', 'active', tabIndexForId(lastTabId) - 1);
-	});
+                $('#json-reveal').text(
+                    JSON.stringify(_.values(protections), null, ' ')
+                );
+                break;
 
-	$(".next-step").on('click', function(event) {
-		$('#tabs').tabs('option', 'active', tabIndexForId(lastTabId) + 1);
-	});
-	
-	$("#verify-button").on('click', function() {
+            case 'tabs-done':
+                // nothing to do?
+                break;
 
-		var finalizeVerifyUI = _.debounce(function(err) {
-			updateTabEnables();
-			
-			if (err) {
-				notifyAlertOnTab('verify', err.toString());
-			}
-			else {
-				$('#certificates').val('');
-				$('#tabs').tabs('option', 'active', tabIndexForId('tabs-show'));
-			}
-			
-			$('#progress-verify').hide();
-			$('#buttons-verify').show();
-		}, 2000);
+            default:
+                throw 'no match for tab in read.js';
+        }
+        lastTabId = ui.newPanel.attr('id');
+    });
 
-		clearAlertOnTab('verify');
-	
-		var revealInput = $('#certificates').get(0).value;
-		if (blackhighlighter.trimAllWhitespace(revealInput) === '') {
-			// if they haven't typed anything into the box
-			$('#tabs').tabs('option', 'active', tabIndexForId('tabs-show'));
-		}
-		else {
-			$('#tabs').tabs('disable', tabIndexForId('tabs-show'));
-			$('#tabs').tabs('disable', tabIndexForId('tabs-reveal'));
-			$('#progress-verify').show();
-			$('#buttons-verify').hide();
+    // We can only set up the expanding text area if that text area is visible
+    // but it remembers after that, as long as the CSS changes don't get too
+    // drastic...
 
-			// Catch parsing errors and put them in an error message
-			try {
-				var certificate = $("#editor").blackhighlighter(
-					"certificate", 'decode', clientCommon.unwrapCertificate(
-						revealInput
-					)
-				);
-				
-				$("#editor").blackhighlighter('verify', certificate.reveals);
+    var expandingInitialized = false;
 
-				finalizeVerifyUI(null);
+    $('#tabs').on('tabsactivate', function (event, ui) {
+        if (ui.newPanel.attr('id') == 'tabs-verify') {
+            if (!expandingInitialized) {
+                $('#certificates').expanding();
+            }
 
-			} catch (err) {
-				// do not continue to next tab
+            // attempting to set focus to a hidden item also has trouble
+            // sometimes so better to do this after the tab is being shown
 
-				finalizeVerifyUI(err);
-			}
-		}
-	});
+            $('#certificates').focus();
+        }
+    });
 
-	$("#reveal-button").on('click', function(event) {
+    switch (PARAMS.tabstate) {
+        case 'verify':
+            $('#tabs').tabs('option', 'active', tabIndexForId('tabs-verify'));
+            break;
 
-		var finalizeRevealUI = _.debounce(function (err) {
-			function absoluteFromRelativeURL(url) {
-				// http://objectmix.com/javascript/352627-relative-url-absolute-url.html
+        case 'show':
+            $('#tabs').tabs('option', 'active', tabIndexForId('tabs-show'));
+            break;
 
-				return $('<a href="' + url + '"></a>').get(0).href;
-			}
+        default:
+            throw 'invalid PARAMS.tabstate';
+    }
 
-			if (err) {
-				notifyAlertOnTab('reveal', err.toString());
-				$('#buttons-reveal').show();
-				$('#tabs').tabs('enable', tabIndexForId('tabs-verify'));
-				$('#tabs').tabs('enable', tabIndexForId('tabs-show'));
-				
-				// we only hide the progress bar in the error case, because 
-				// otherwise we want the animation to stick around until the
-				// redirect has completed
+    $(".previous-step").on('click', function(event) {
+        $('#tabs').tabs('option', 'active', tabIndexForId(lastTabId) - 1);
+    });
 
-				$('#progress-reveal').hide();
-			}
-			else {
-				// We want to redirect to the "show" page for this letter
-				// Which means we have to reload if we were already on the
-				// letter's "show" URL
+    $(".next-step").on('click', function(event) {
+        $('#tabs').tabs('option', 'active', tabIndexForId(lastTabId) + 1);
+    });
 
-				if (PARAMS.tabstate == 'show') {
-					// Reload semantics vary in JavaScript and browser versions
-					// http://grizzlyweb.com/webmaster/javascripts/refresh.asp
+    $("#verify-button").on('click', function() {
 
-					window.location.reload(true);
-				}
-				else {
-					// http://stackoverflow.com/a/948242/211160
+        var finalizeVerifyUI = _.debounce(function(err) {
+            updateTabEnables();
 
-					windowlocation.href =
-						clientCommon.makeShowUrl(
-							base_url, PARAMS.commit.commit_id
-						);
-				}
-			}
-		}, 2000);
+            if (err) {
+                notifyAlertOnTab('verify', err.toString());
+            }
+            else {
+                $('#certificates').val('');
+                $('#tabs').tabs('option', 'active', tabIndexForId('tabs-show'));
+            }
 
-		$('#tabs').tabs('disable', tabIndexForId('tabs-verify'));
-		$('#tabs').tabs('disable', tabIndexForId('tabs-show'));
+            $('#progress-verify').hide();
+            $('#buttons-verify').show();
+        }, 2000);
 
-		$('#progress-reveal').show();
-		$('#buttons-reveal').hide();
-		$('#reveal-json-accordion').hide();
-		
-		$('#editor').blackhighlighter(
-			'reveal', base_url, finalizeRevealUI
-		);
-	});
+        clearAlertOnTab('verify');
+
+        var revealInput = $('#certificates').get(0).value;
+        if (blackhighlighter.trimAllWhitespace(revealInput) === '') {
+            // if they haven't typed anything into the box
+            $('#tabs').tabs('option', 'active', tabIndexForId('tabs-show'));
+        }
+        else {
+            $('#tabs').tabs('disable', tabIndexForId('tabs-show'));
+            $('#tabs').tabs('disable', tabIndexForId('tabs-reveal'));
+            $('#progress-verify').show();
+            $('#buttons-verify').hide();
+
+            // Catch parsing errors and put them in an error message
+            try {
+                var certificate = $("#editor").blackhighlighter(
+                    "certificate", 'decode', clientCommon.unwrapCertificate(
+                        revealInput
+                    )
+                );
+
+                $("#editor").blackhighlighter('verify', certificate.reveals);
+
+                finalizeVerifyUI(null);
+
+            } catch (err) {
+                // do not continue to next tab
+
+                finalizeVerifyUI(err);
+            }
+        }
+    });
+
+    $("#reveal-button").on('click', function(event) {
+
+        var finalizeRevealUI = _.debounce(function (err) {
+            function absoluteFromRelativeURL(url) {
+                // http://objectmix.com/javascript/352627-relative-url-absolute-url.html
+
+                return $('<a href="' + url + '"></a>').get(0).href;
+            }
+
+            if (err) {
+                notifyAlertOnTab('reveal', err.toString());
+                $('#buttons-reveal').show();
+                $('#tabs').tabs('enable', tabIndexForId('tabs-verify'));
+                $('#tabs').tabs('enable', tabIndexForId('tabs-show'));
+
+                // we only hide the progress bar in the error case, because
+                // otherwise we want the animation to stick around until the
+                // redirect has completed
+
+                $('#progress-reveal').hide();
+            }
+            else {
+                // We want to redirect to the "show" page for this letter
+                // Which means we have to reload if we were already on the
+                // letter's "show" URL
+
+                if (PARAMS.tabstate == 'show') {
+                    // Reload semantics vary in JavaScript and browser versions
+                    // http://grizzlyweb.com/webmaster/javascripts/refresh.asp
+
+                    window.location.reload(true);
+                }
+                else {
+                    // http://stackoverflow.com/a/948242/211160
+
+                    windowlocation.href =
+                        clientCommon.makeShowUrl(
+                            base_url, PARAMS.commit.commit_id
+                        );
+                }
+            }
+        }, 2000);
+
+        $('#tabs').tabs('disable', tabIndexForId('tabs-verify'));
+        $('#tabs').tabs('disable', tabIndexForId('tabs-show'));
+
+        $('#progress-reveal').show();
+        $('#buttons-reveal').hide();
+        $('#reveal-json-accordion').hide();
+
+        $('#editor').blackhighlighter(
+            'reveal', base_url, finalizeRevealUI
+        );
+    });
 });

@@ -25,53 +25,53 @@
 
 <div class="tabs-content" id="tabs-reveal">
 
-	<div class="leading-section">
-		<div class="ui-state-highlight ui-corner-all" style="margin-top: 20px; padding: 0 .7em;"> 
-			<p><span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
-			<b>Etiquette note:</b> Though it is obviously okay for a sender to reveal
-			their <i>own</i> letter for pretty much any reason, a recipient should 
-			generally respect the protections that were applied by the sender.  
-			Exceptions would be cases such as proving to the public that the missing parts
-			do not contain authentic information (and thus do not warrant response).</p>	
-		</div>
-	</div>
+    <div class="leading-section">
+        <div class="ui-state-highlight ui-corner-all" style="margin-top: 20px; padding: 0 .7em;">
+            <p><span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
+            <b>Etiquette note:</b> Though it is obviously okay for a sender to reveal
+            their <i>own</i> letter for pretty much any reason, a recipient should
+            generally respect the protections that were applied by the sender.
+            Exceptions would be cases such as proving to the public that the missing parts
+            do not contain authentic information (and thus do not warrant response).</p>
+        </div>
+    </div>
 
-	<div class="textarea-wrapper">
-	</div>
+    <div class="textarea-wrapper">
+    </div>
 
-	<div id="reveal-json-accordion">
-		<h3>View the low-level data that will be revealed to the server</h3>
-		<div id='json-reveal'>
-			{# Filled by switching tabs #}
-		</div>
-	</div>
+    <div id="reveal-json-accordion">
+        <h3>View the low-level data that will be revealed to the server</h3>
+        <div id='json-reveal'>
+            {# Filled by switching tabs #}
+        </div>
+    </div>
 
-	<div class="trailing-section">
-		<p>Remember that you can still send the certificates to any party
-		who wants to verify the letter without publishing it to the whole world!
-		So reveal only if you are the sender, or if it's absolutely necessary
-		to prove a point about the communication.</p>
+    <div class="trailing-section">
+        <p>Remember that you can still send the certificates to any party
+        who wants to verify the letter without publishing it to the whole world!
+        So reveal only if you are the sender, or if it's absolutely necessary
+        to prove a point about the communication.</p>
 
-		<p><i>If you are <b>sure</b> you want to reveal</i>, click the 
-		button below.</p>
+        <p><i>If you are <b>sure</b> you want to reveal</i>, click the
+        button below.</p>
 
-		<div class="error-display" style="display: none;">
-			<div class="ui-state-error ui-corner-all" style="margin-top: 20px; padding: 0 .7em;"> 
-				<p><span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
-				<strong>Error:</strong> <span class="error-display-msg">{# filled by notifyErrorOnTab() #}</span></p>
-			</div>
-		</div>
+        <div class="error-display" style="display: none;">
+            <div class="ui-state-error ui-corner-all" style="margin-top: 20px; padding: 0 .7em;">
+                <p><span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
+                <strong>Error:</strong> <span class="error-display-msg">{# filled by notifyErrorOnTab() #}</span></p>
+            </div>
+        </div>
 
-		<div class="action-buttons">
-			<a href="#" class="previous-step">go back and review the letter</a>
-				-or-
-			<button id="reveal-button">
-				"I'm certain: <b>Reveal this to the World!!!</b>"
-			</button>
-		</div>
+        <div class="action-buttons">
+            <a href="#" class="previous-step">go back and review the letter</a>
+                -or-
+            <button id="reveal-button">
+                "I'm certain: <b>Reveal this to the World!!!</b>"
+            </button>
+        </div>
 
-		<div id="progress-reveal" style="display: none;">
-			<div class="indeterminate-progress"></div>
-		</div>
-	</div>
+        <div id="progress-reveal" style="display: none;">
+            <div class="indeterminate-progress"></div>
+        </div>
+    </div>
 </div>

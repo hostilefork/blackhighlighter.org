@@ -32,26 +32,26 @@ blackhighlighter|READ
 
 
 {% block params_javascript %}
-	{% parent %} {# inherit any existing parameters #}
- 
-	PARAMS.blackhighlighter_media_url = "{{ BLACKHIGHLIGHTER_MEDIA_URL }}"; 
+    {% parent %} {# inherit any existing parameters #}
 
-	PARAMS.commit_id = "{{ commit_id }}";
-	PARAMS.tabstate = "{{ tabstate }}";
-	
-	{# Tried to use this but it didn't work, passing as JSON.stringify instead #}
-	{# https://github.com/paularmstrong/swig/blob/master/docs/filters.md#json_encode #}
-	PARAMS.commit = {{ commit|json_encode|raw }};
-	PARAMS.reveals = {{ revealed_certificates|json_encode|raw }};
+    PARAMS.blackhighlighter_media_url = "{{ BLACKHIGHLIGHTER_MEDIA_URL }}";
 
-	PARAMS.base_url = "{{ BLACKHIGHLIGHTER_BASE_URL }}";
+    PARAMS.commit_id = "{{ commit_id }}";
+    PARAMS.tabstate = "{{ tabstate }}";
 
-	PARAMS.HOSTING_SERVICE = "{{ HOSTING_SERVICE }}";
+    {# Tried to use this but it didn't work, passing as JSON.stringify instead #}
+    {# https://github.com/paularmstrong/swig/blob/master/docs/filters.md#json_encode #}
+    PARAMS.commit = {{ commit|json_encode|raw }};
+    PARAMS.reveals = {{ revealed_certificates|json_encode|raw }};
+
+    PARAMS.base_url = "{{ BLACKHIGHLIGHTER_BASE_URL }}";
+
+    PARAMS.HOSTING_SERVICE = "{{ HOSTING_SERVICE }}";
 {% endblock params_javascript %}
 
 
 {% block scripts %}
-	{% parent %} {# inherit parent scripts, do not overwrite them! #}
+    {% parent %} {# inherit parent scripts, do not overwrite them! #}
 
 {% endblock scripts %}
 
@@ -59,19 +59,19 @@ blackhighlighter|READ
 {% block content %}
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
-	<div id="tabs">
-		<ul class="tabs">
-			<li style="list-style: none;"><a href="#tabs-verify">Verify</a></li>		
-			<li style="list-style: none;"><a href="#tabs-show">Show</a></li>	
-			<li style="list-style: none;"><a href="#tabs-reveal">Reveal</a></li>
-		</ul>
+    <div id="tabs">
+        <ul class="tabs">
+            <li style="list-style: none;"><a href="#tabs-verify">Verify</a></li>
+            <li style="list-style: none;"><a href="#tabs-show">Show</a></li>
+            <li style="list-style: none;"><a href="#tabs-reveal">Reveal</a></li>
+        </ul>
 
 {% include "read-verify.html" %}
-		
+
 {% include "read-show.html" %}
-		
+
 {% include "read-reveal.html" %}
 
-	</div>
+    </div>
 
 {% endblock content %}

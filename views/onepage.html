@@ -33,7 +33,7 @@ blackhighlighter|DISCUSSION
 
 {% block params_javascript %}
     {% parent %} {# inherit any existing parameter block #}
-    PARAMS.blackhighlighter_media_url = "{{ BLACKHIGHLIGHTER_MEDIA_URL }}"; 
+    PARAMS.blackhighlighter_media_url = "{{ BLACKHIGHLIGHTER_MEDIA_URL }}";
 
     PARAMS.base_url = "{{ BLACKHIGHLIGHTER_BASE_URL }}";
 
@@ -51,9 +51,9 @@ blackhighlighter|DISCUSSION
 
 <div id="tabs">
     <ul class="tabs">
-        <li><a href="#tabs-discussion">Discussion</a></li>      
+        <li><a href="#tabs-discussion">Discussion</a></li>
     </ul>
-        
+
     <div class="tabs-discussion" id="tabs-discussion">
 
         <div class="leading-section">
@@ -86,7 +86,7 @@ blackhighlighter|DISCUSSION
         <p class="validateTips">Paste your blackhighlighter certificate text below.  No information will be revealed to the server at this time.</p>
 
         <div class="ui-state-highlight ui-corner-all certificate-display" id="json-protected"></div>
-     
+
     </div>
 
     <div id="check-form" title="Check Hidden Portions">
@@ -96,5 +96,5 @@ blackhighlighter|DISCUSSION
     </div>
 
 </div>
- 
+
 {% endblock content %}

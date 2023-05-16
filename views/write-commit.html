@@ -25,36 +25,36 @@
 
 <div class="tabs-content" id="tabs-commit">
 
-	<div class="leading-section">
-		<p>You <b>MUST</b> send the following information to the recipient (and save
-		a copy yourself).  It contains the verifiable proof of what was written in the 
-		hidden parts of the letter.  The server has only enough information to do that verification &mdash; but it cannot guess the information without the certificate.</p>
+    <div class="leading-section">
+        <p>You <b>MUST</b> send the following information to the recipient (and save
+        a copy yourself).  It contains the verifiable proof of what was written in the
+        hidden parts of the letter.  The server has only enough information to do that verification &mdash; but it cannot guess the information without the certificate.</p>
 
-		<p>Remember: none of this was sent to the server!  So if you lose 
-		this information, then evidence of what you have written will be lost!</p>
-	</div>
+        <p>Remember: none of this was sent to the server!  So if you lose
+        this information, then evidence of what you have written will be lost!</p>
+    </div>
 
-	<div class="textarea-wrapper">
-		<div class="ui-state-highlight ui-corner-all certificate-display" id="json-protected">
-			{# Certificate put here by write.js #}
-		</div>
-	</div>
+    <div class="textarea-wrapper">
+        <div class="ui-state-highlight ui-corner-all certificate-display" id="json-protected">
+            {# Certificate put here by write.js #}
+        </div>
+    </div>
 
-	<div class="trailing-section">
-		<div class="error-display" style="display: none;">
-			<div class="ui-state-error ui-corner-all" style="margin-top: 20px; padding: 0 .7em;"> 
-				<p><span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
-				<strong>Error:</strong> <span class="error-display-msg">{# filled by notifyErrorOnTab() #}</span></p>
-			</div>
-		</div>
-		
-		<p>Keep that safe, because both the missing information AND the proof to verify 
-		it are contained in that certificate.  You can test the certificate by visiting
-		the following URL:</p>
+    <div class="trailing-section">
+        <div class="error-display" style="display: none;">
+            <div class="ui-state-error ui-corner-all" style="margin-top: 20px; padding: 0 .7em;">
+                <p><span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
+                <strong>Error:</strong> <span class="error-display-msg">{# filled by notifyErrorOnTab() #}</span></p>
+            </div>
+        </div>
 
-		<div id="url-public" style="text-indent:30px;">
-			{# URL is put here by write.js #}
-		</div>
-	</div>
+        <p>Keep that safe, because both the missing information AND the proof to verify
+        it are contained in that certificate.  You can test the certificate by visiting
+        the following URL:</p>
+
+        <div id="url-public" style="text-indent:30px;">
+            {# URL is put here by write.js #}
+        </div>
+    </div>
 
 </div>

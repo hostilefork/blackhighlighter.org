@@ -19,71 +19,71 @@
 //
 
 define([
-	// libs which return exported objects to capture in the function prototype
+    // libs which return exported objects to capture in the function prototype
 
-	'jquery',
-	'underscore',
-	'blackhighlighter',
-	'client-common',
+    'jquery',
+    'underscore',
+    'blackhighlighter',
+    'client-common',
 
-	// these libs have no results, they just add to the environment (via shims)
+    // these libs have no results, they just add to the environment (via shims)
 
-	'jqueryui',
-	'json2',
-	'actual'
+    'jqueryui',
+    'json2',
+    'actual'
 
 ], function($, _, blackhighlighter, clientCommon) {
 
-	// Whole-script strict mode syntax
-	"use strict";
+    // Whole-script strict mode syntax
+    "use strict";
 
-	// We used to pass in a base URL in PARAMS.base_url, but now we go off
-	// of the browser's hostname and port for that...we could conceivably
-	// check to make sure the server and client are in agreement of what
-	// the server's base url is.
+    // We used to pass in a base URL in PARAMS.base_url, but now we go off
+    // of the browser's hostname and port for that...we could conceivably
+    // check to make sure the server and client are in agreement of what
+    // the server's base url is.
 
-	const scheme = document.location.protocol;  // http: or https:, has colon
-	var base_url = scheme + "//" + document.location.host + "/";
+    const scheme = document.location.protocol;  // http: or https:, has colon
+    var base_url = scheme + "//" + document.location.host + "/";
 
-	// Makes it easier to select certificate, but impossible to partially
-	// select it.  Seems a good tradeoff.
+    // Makes it easier to select certificate, but impossible to partially
+    // select it.  Seems a good tradeoff.
 
-	function highlightCertificateText() {
-		clientCommon.highlightAllOfElement($('#json-protected').get(0));
-	}
+    function highlightCertificateText() {
+        clientCommon.highlightAllOfElement($('#json-protected').get(0));
+    }
 
-	$('#json-protected').on('click', highlightCertificateText);
+    $('#json-protected').on('click', highlightCertificateText);
 
-	// Bring tabs to life.
-	$('#tabs').tabs();
+    // Bring tabs to life.
+    $('#tabs').tabs();
 
-	$(window).resize(clientCommon.resizeListener);
+    $(window).resize(clientCommon.resizeListener);
 
-	clientCommon.resizeListener(null);
+    clientCommon.resizeListener(null);
 
-	$("#editor").blackhighlighter({
-		mode: 'compose'
-	});
-	$('#editor').focus();
+    $("#editor").blackhighlighter({
+        mode: 'compose'
+    });
+    $('#editor').focus();
 
-	clientCommon.plugHostingServiceIfNecessary(PARAMS.HOSTING_SERVICE);
+    clientCommon.plugHostingServiceIfNecessary(PARAMS.HOSTING_SERVICE);
 
-	// http://www.siafoo.net/article/67
-	function closeEditorWarning() {
-		if ($("#editor").blackhighlighter('option', 'commit') !== null) {
-			return 'It looks like you have been editing something -- if you leave before submitting your changes will be lost.';
-		}
-		return null;
-	}
-	
-	window.onbeforeunload = closeEditorWarning;
+    // http://www.siafoo.net/article/67
+    function closeEditorWarning() {
+        if ($("#editor").blackhighlighter('option', 'commit') !== null) {
+            return 'It looks like you have been editing something -- if you leave before submitting your changes will be lost.';
+        }
+        return null;
+    }
+
+    window.onbeforeunload = closeEditorWarning;
 
 
-	//
-	// COMMIT HANDLING
-	//
+    //
+    // COMMIT HANDLING
+    //
 
-   	var certificateDialog = $( "#certificate-form" ).dialog({
+       var certificateDialog = $( "#certificate-form" ).dialog({
       autoOpen: false,
       height: 480,
       width: 640,
@@ -98,114 +98,114 @@ define([
       }
     });
 
-	var finalizeCommitUI = _.debounce(function (err) {
-		if (err) {
-			// Unlike the sandbox demo, we're not fancy about errors here
-			alert(err.toString());
-			return;
-		}
+    var finalizeCommitUI = _.debounce(function (err) {
+        if (err) {
+            // Unlike the sandbox demo, we're not fancy about errors here
+            alert(err.toString());
+            return;
+        }
 
-		$('#json-protected').empty();
+        $('#json-protected').empty();
 
-		if ($("#editor").blackhighlighter('option', 'mode') !== 'show') {
-			throw "Internal error: ommit tab enabled but no commit made.";
-		}
+        if ($("#editor").blackhighlighter('option', 'mode') !== 'show') {
+            throw "Internal error: ommit tab enabled but no commit made.";
+        }
 
-		var commit = $("#editor").blackhighlighter('option', 'commit');
-		var protections = $("#editor").blackhighlighter('option', 'protected');
-		var keyCount = _.keys(protections).length;
+        var commit = $("#editor").blackhighlighter('option', 'commit');
+        var protections = $("#editor").blackhighlighter('option', 'protected');
+        var keyCount = _.keys(protections).length;
 
-		if (keyCount === 0) {
-			// no protections -- handle this specially?
+        if (keyCount === 0) {
+            // no protections -- handle this specially?
 
-			$('#json-protected').text(
-				"Note: No protections made, post is viewable in full."
-			);
-		}
-		else {
-			var certificate = $("#editor").blackhighlighter(
-				'certificate', 'encode',
-				commit.commit_id,
-				_.values(protections)
-			);
+            $('#json-protected').text(
+                "Note: No protections made, post is viewable in full."
+            );
+        }
+        else {
+            var certificate = $("#editor").blackhighlighter(
+                'certificate', 'encode',
+                commit.commit_id,
+                _.values(protections)
+            );
 
-			$('#json-protected').text(clientCommon.wrapCertificate(
-				base_url, commit.commit_id, keyCount, certificate
-			));
-			
-			// jQuery tabs do something weird to the selection
-			// http://groups.google.com/group/jquery-ui/browse_thread/thread/cf272e3dbb75f201
-			// waiting is a workaround
+            $('#json-protected').text(clientCommon.wrapCertificate(
+                base_url, commit.commit_id, keyCount, certificate
+            ));
 
-			window.setTimeout(highlightCertificateText, 200); 
-		}
+            // jQuery tabs do something weird to the selection
+            // http://groups.google.com/group/jquery-ui/browse_thread/thread/cf272e3dbb75f201
+            // waiting is a workaround
 
-		$("#compose-protect-publish-toolbar").hide();
-		$("#verify-reveal-toolbar").show();
-		
-		certificateDialog.dialog( "open" );
-	}, 2000);
-	
-	$("#publish").button().on('click', function(event) {
-		if ($("#editor").blackhighlighter('option', 'mode') === 'show') {
-			throw Error("Duplicate commit attempt detected.");
-		}
+            window.setTimeout(highlightCertificateText, 200);
+        }
 
-		$("#editor").blackhighlighter('commit',
-			base_url,
-			finalizeCommitUI
-		);
-	});
+        $("#compose-protect-publish-toolbar").hide();
+        $("#verify-reveal-toolbar").show();
+
+        certificateDialog.dialog( "open" );
+    }, 2000);
+
+    $("#publish").button().on('click', function(event) {
+        if ($("#editor").blackhighlighter('option', 'mode') === 'show') {
+            throw Error("Duplicate commit attempt detected.");
+        }
+
+        $("#editor").blackhighlighter('commit',
+            base_url,
+            finalizeCommitUI
+        );
+    });
 
 
 
-	//
-	// VERIFY HANDLING
-	//
+    //
+    // VERIFY HANDLING
+    //
 
     function verifyLocally() {
-		var valid = true;
-		/* allFields.removeClass( "ui-state-error" ); */
+        var valid = true;
+        /* allFields.removeClass( "ui-state-error" ); */
 
-/*		valid = valid && checkRegexp( email, emailRegex, "eg. ui@jquery.com" ); */
- 
- 		var finalizeVerifyUI = _.debounce(function(err) {	
-			if (err) {
-				// No fancy error handling in this demo...
-				alert(err.toString());
-				return;
-			}
-			$('#certificates').val('');
-      		if ( valid ) {
-        		checkDialog.dialog( "close" );
-      		}
-		}, 2000);
+/*        valid = valid && checkRegexp( email, emailRegex, "eg. ui@jquery.com" ); */
+
+         var finalizeVerifyUI = _.debounce(function(err) {
+            if (err) {
+                // No fancy error handling in this demo...
+                alert(err.toString());
+                return;
+            }
+            $('#certificates').val('');
+              if ( valid ) {
+                checkDialog.dialog( "close" );
+              }
+        }, 2000);
 
 
-		var revealInput = $('#certificates').get(0).value;
-		if (blackhighlighter.trimAllWhitespace(revealInput) === '') {
-			alert('nothing entered!');
-		}
-		else {
-			// Catch parsing errors and put them in an error message
-			try {
-				var certificate = $("#editor").blackhighlighter(
-					"certificate", 'decode', clientCommon.unwrapCertificate(
-						revealInput
-					)
-				);
-				
-				$("#editor").blackhighlighter('verify', certificate.reveals);
+        var revealInput = $('#certificates').get(0).value;
+        if (blackhighlighter.trimAllWhitespace(revealInput) === '') {
+            alert('nothing entered!');
+        }
+        else {
+            // Catch parsing errors and put them in an error message
+            try {
+                var certificate = $("#editor").blackhighlighter(
+                    "certificate", 'decode', clientCommon.unwrapCertificate(
+                        revealInput
+                    )
+                );
 
-				finalizeVerifyUI(null);
+                $("#editor").blackhighlighter('verify', certificate.reveals);
 
-			} catch (err) {
-				finalizeVerifyUI(err);
-			}
-		}
+                finalizeVerifyUI(null);
+
+            } catch (err) {
+                finalizeVerifyUI(err);
+            }
+        }
     }
 
-   	var checkDialog = $( "#check-form" ).dialog({
+       var checkDialog = $( "#check-form" ).dialog({
       autoOpen: false,
       height: 480,
       width: 640,
@@ -220,7 +220,7 @@ define([
         /* allFields.removeClass("ui-state-error"); */
       }
     });
-  
+
     $( "#check-hidden" ).button().on( "click", function() {
       checkDialog.dialog( "open" );
     });
@@ -228,13 +228,13 @@ define([
     $( "#compose-protect" ).buttonset();
 
     $( "#compose" ).on('click', function (event) {
-    	$("#editor").blackhighlighter('option', 'mode', 'compose');
-    	return true;
+        $("#editor").blackhighlighter('option', 'mode', 'compose');
+        return true;
     });
 
     $( "#protect" ).on('click', function (event) {
-    	$("#editor").blackhighlighter('option', 'mode', 'protect');
-    	return true;
+        $("#editor").blackhighlighter('option', 'mode', 'protect');
+        return true;
     });
 
 /*
@@ -242,7 +242,7 @@ define([
       var email = $( "#certificates" );
       var allFields = $( [] ).add( email );
       var tips = $( ".validateTips" );
- 
+
     function updateTips( t ) {
       tips
         .text( t )
@@ -251,7 +251,7 @@ define([
         tips.removeClass( "ui-state-highlight", 1500 );
       }, 500 );
     }
- 
+
     function checkRegexp( o, regexp, n ) {
       if ( !( regexp.test( o.val() ) ) ) {
         o.addClass( "ui-state-error" );

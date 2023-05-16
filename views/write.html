@@ -30,35 +30,35 @@ blackhighlighter|WRITE
 
 
 {% block params_javascript %}
-	{% parent %} {# inherit any existing parameter block #}
-	PARAMS.blackhighlighter_media_url = "{{ BLACKHIGHLIGHTER_MEDIA_URL }}"; 
+    {% parent %} {# inherit any existing parameter block #}
+    PARAMS.blackhighlighter_media_url = "{{ BLACKHIGHLIGHTER_MEDIA_URL }}";
 
-	PARAMS.base_url = "{{ BLACKHIGHLIGHTER_BASE_URL }}";
+    PARAMS.base_url = "{{ BLACKHIGHLIGHTER_BASE_URL }}";
 
-	PARAMS.HOSTING_SERVICE = "{{ HOSTING_SERVICE }}";
+    PARAMS.HOSTING_SERVICE = "{{ HOSTING_SERVICE }}";
 {% endblock params_javascript %}
 
 
 {% block scripts %}
-	{% parent %} {# inherit parent scripts, do not overwrite them! #}
+    {% parent %} {# inherit parent scripts, do not overwrite them! #}
 {% endblock scripts %}
 
 
 {% block content %}
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
-	<div id="tabs">
-		<ul class="tabs">
-			<li><a href="#tabs-compose">Compose</a></li>		
-			<li><a href="#tabs-protect">Protect</a></li>	
-			<li><a href="#tabs-commit">Commit</a></li>
-		</ul>
-		
+    <div id="tabs">
+        <ul class="tabs">
+            <li><a href="#tabs-compose">Compose</a></li>
+            <li><a href="#tabs-protect">Protect</a></li>
+            <li><a href="#tabs-commit">Commit</a></li>
+        </ul>
+
 {% include "write-compose.html" %}
-		
+
 {% include "write-protect.html" %}
-		
+
 {% include "write-commit.html" %}
-	</div>
+    </div>
 
 {% endblock content %}

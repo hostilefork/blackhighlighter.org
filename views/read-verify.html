@@ -25,39 +25,39 @@
 
 <div class="tabs-content" id="tabs-verify">
 
-	<div class="leading-section">
-		<p>This is where you paste the blackhighlighter certificates for this post.</p> 
+    <div class="leading-section">
+        <p>This is where you paste the blackhighlighter certificates for this post.</p>
 
-		<div class="ui-state-highlight ui-corner-all" style="margin-top: 20px; padding: 0 .7em;"> 
-			<p><span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
-			<strong>Note:</strong> Entering a certificate for verification only does so in your browser &mdash; it makes no communication with the server.
-			You will only be showing the information to others if you later choose to go through with the "reveal" step.</p>
-		</div>
-	</div>
+        <div class="ui-state-highlight ui-corner-all" style="margin-top: 20px; padding: 0 .7em;">
+            <p><span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
+            <strong>Note:</strong> Entering a certificate for verification only does so in your browser &mdash; it makes no communication with the server.
+            You will only be showing the information to others if you later choose to go through with the "reveal" step.</p>
+        </div>
+    </div>
 
-	<div class="textarea-wrapper">
-		<textarea class="certificate-entry ui-widget-content ui-corner-all" id="certificates" spellcheck="false"></textarea>
-	</div>
+    <div class="textarea-wrapper">
+        <textarea class="certificate-entry ui-widget-content ui-corner-all" id="certificates" spellcheck="false"></textarea>
+    </div>
 
-	<div class="trailing-text">
-		<p>If you paste one or more valid certificates for this letter and push verify, then it 
-		should show you some of the missing portions.</p>
+    <div class="trailing-text">
+        <p>If you paste one or more valid certificates for this letter and push verify, then it
+        should show you some of the missing portions.</p>
 
-		<div class="error-display" style="display: none;">
-			<div class="ui-state-error ui-corner-all" style="margin-top: 20px; padding: 0 .7em;"> 
-				<p><span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
-				<strong>Error:</strong> <span class="error-display-msg">{# filled by notifyErrorOnTab() #}</span></p>
-			</div>
-		</div>
+        <div class="error-display" style="display: none;">
+            <div class="ui-state-error ui-corner-all" style="margin-top: 20px; padding: 0 .7em;">
+                <p><span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
+                <strong>Error:</strong> <span class="error-display-msg">{# filled by notifyErrorOnTab() #}</span></p>
+            </div>
+        </div>
 
-		<div class="action-buttons">
-			<button id="verify-button">
-				Next step: <b>Verify On Your Computer Only</b>
-			</button>
-		</div>
+        <div class="action-buttons">
+            <button id="verify-button">
+                Next step: <b>Verify On Your Computer Only</b>
+            </button>
+        </div>
 
-		<div id="progress-verify" style="display: none;">
-			<div class="indeterminate-progress"></div>
-		</div>
-	</div>
+        <div id="progress-verify" style="display: none;">
+            <div class="indeterminate-progress"></div>
+        </div>
+    </div>
 </div>
