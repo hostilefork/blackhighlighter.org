@@ -32,7 +32,7 @@
         "mongodb": "5.5.0",
         "underscore": "1.8.3",
         "q": "1.4.1",
-        "blackhighlighter": "0.10.0"
+        "blackhighlighter": "*"
     },
     "noAnalyze": true,
     "devDependencies": {
